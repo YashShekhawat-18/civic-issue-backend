@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings, validate_settings
 from app.core.database import close_mongo_connection, connect_to_mongo
 from app.core.errors import register_exception_handlers
+from app.core.responses import success_response
 from app.middleware.security_headers import SecurityHeadersMiddleware
 from app.models.indexes import create_all_indexes
 from app.routes import api_router
@@ -37,3 +38,11 @@ app.add_middleware(
 
 register_exception_handlers(app)
 app.include_router(api_router, prefix="/api/v1")
+
+
+@app.get("/", include_in_schema=False)
+async def root():
+    return success_response(
+        "Civic Issue Reporting API is running",
+        {"docs": "/docs", "health": "/api/v1/health"},
+    )
