@@ -16,6 +16,12 @@ class Settings(BaseSettings):
     duplicate_radius_meters: int = 100
     overdue_days: int = 3
 
+    # Only used by the seed script
+    seed_admin_name: str = "System Admin"
+    seed_admin_email: str = ""
+    seed_admin_password: str = ""
+    seed_worker_password: str = ""
+
 
 settings = Settings()
 

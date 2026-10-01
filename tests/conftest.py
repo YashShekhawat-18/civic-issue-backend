@@ -1,13 +1,17 @@
+import asyncio
 import os
 
 # These MUST be set before the app is imported
 os.environ["APP_ENV"] = "test"
 os.environ["MONGO_DB_NAME"] = "civic_issue_test_db"
 os.environ["JWT_SECRET"] = "test-only-secret-key-for-automated-tests-1234567890"
+os.environ["SEED_ADMIN_EMAIL"] = "seed-admin@example.com"
+os.environ["SEED_ADMIN_PASSWORD"] = "SeedAdminPass123"
+os.environ["SEED_WORKER_PASSWORD"] = "SeedWorkerPass123"
 
 import pytest
 from fastapi.testclient import TestClient
-from pymongo import MongoClient
+from pymongo import AsyncMongoClient, MongoClient
 
 from app.core.config import settings
 from app.main import app
@@ -32,9 +36,10 @@ def sync_db():
 
 
 @pytest.fixture(autouse=True)
-def clean_users(sync_db):
-    """Every test starts with an empty users collection."""
-    sync_db["users"].delete_many({})
+def clean_collections(sync_db):
+    """Every test starts with empty collections."""
+    for name in ("users", "departments", "categories", "badges"):
+        sync_db[name].delete_many({})
     yield
 
 
@@ -56,3 +61,21 @@ def create_user(client, sync_db):
         return {"Authorization": f"Bearer {token}"}
 
     return _create
+
+
+@pytest.fixture
+def seed_database(sync_db):
+    """Returns a function that runs the real seed script against the test database."""
+    from app import seed
+
+    def _seed():
+        async def _run():
+            mongo = AsyncMongoClient(settings.mongo_uri, tz_aware=True)
+            try:
+                await seed.run_seed(mongo[settings.mongo_db_name])
+            finally:
+                await mongo.close()
+
+        asyncio.run(_run())
+
+    return _seed

@@ -5,7 +5,9 @@ from fastapi.responses import JSONResponse
 def success_response(message: str = "Success", data=None, status_code: int = 200) -> JSONResponse:
     return JSONResponse(
         status_code=status_code,
-        content=jsonable_encoder({"success": True, "message": message, "data": data or {}}),
+        content=jsonable_encoder(
+            {"success": True, "message": message, "data": data if data is not None else {}}
+        ),
     )
 
 
