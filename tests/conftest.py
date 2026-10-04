@@ -1,10 +1,14 @@
 import asyncio
 import os
+import shutil
+import tempfile
 
 # These MUST be set before the app is imported
+TEST_UPLOAD_DIR = tempfile.mkdtemp(prefix="civic_test_uploads_")
 os.environ["APP_ENV"] = "test"
 os.environ["MONGO_DB_NAME"] = "civic_issue_test_db"
 os.environ["JWT_SECRET"] = "test-only-secret-key-for-automated-tests-1234567890"
+os.environ["UPLOAD_DIR"] = TEST_UPLOAD_DIR
 os.environ["SEED_ADMIN_EMAIL"] = "seed-admin@example.com"
 os.environ["SEED_ADMIN_PASSWORD"] = "SeedAdminPass123"
 os.environ["SEED_WORKER_PASSWORD"] = "SeedWorkerPass123"
@@ -17,6 +21,7 @@ from app.core.config import settings
 from app.main import app
 
 TEST_PASSWORD = "Passw0rd123"
+COLLECTIONS_TO_CLEAN = ("users", "departments", "categories", "badges", "complaints", "counters")
 
 
 @pytest.fixture(scope="session")
@@ -35,10 +40,16 @@ def sync_db():
     mongo.close()
 
 
+@pytest.fixture(scope="session", autouse=True)
+def remove_test_uploads():
+    yield
+    shutil.rmtree(TEST_UPLOAD_DIR, ignore_errors=True)
+
+
 @pytest.fixture(autouse=True)
 def clean_collections(sync_db):
     """Every test starts with empty collections."""
-    for name in ("users", "departments", "categories", "badges"):
+    for name in COLLECTIONS_TO_CLEAN:
         sync_db[name].delete_many({})
     yield
 
@@ -63,19 +74,28 @@ def create_user(client, sync_db):
     return _create
 
 
+def _run_seed_function(seed_function):
+    async def _run():
+        mongo = AsyncMongoClient(settings.mongo_uri, tz_aware=True)
+        try:
+            await seed_function(mongo[settings.mongo_db_name])
+        finally:
+            await mongo.close()
+
+    asyncio.run(_run())
+
+
 @pytest.fixture
 def seed_database(sync_db):
-    """Returns a function that runs the real seed script against the test database."""
+    """Returns a function that runs the full seed (departments, categories, users, badges)."""
     from app import seed
 
-    def _seed():
-        async def _run():
-            mongo = AsyncMongoClient(settings.mongo_uri, tz_aware=True)
-            try:
-                await seed.run_seed(mongo[settings.mongo_db_name])
-            finally:
-                await mongo.close()
+    return lambda: _run_seed_function(seed.run_seed)
 
-        asyncio.run(_run())
 
-    return _seed
+@pytest.fixture
+def seed_catalog_only(sync_db):
+    """Faster: only departments and categories."""
+    from app import seed
+
+    return lambda: _run_seed_function(seed.seed_catalog)
