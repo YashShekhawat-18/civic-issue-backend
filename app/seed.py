@@ -118,10 +118,16 @@ async def seed_badges(db) -> None:
     report("Badges", created, len(BADGES))
 
 
-async def run_seed(db) -> None:
+async def seed_catalog(db) -> dict:
+    """Indexes, departments and categories only."""
     await create_all_indexes(db)
     department_ids = await seed_departments(db)
     await seed_categories(db, department_ids)
+    return department_ids
+
+
+async def run_seed(db) -> None:
+    department_ids = await seed_catalog(db)
     await seed_users(db, department_ids)
     await seed_badges(db)
 

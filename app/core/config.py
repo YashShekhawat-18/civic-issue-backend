@@ -16,6 +16,10 @@ class Settings(BaseSettings):
     duplicate_radius_meters: int = 100
     overdue_days: int = 3
 
+    # Photo uploads
+    upload_dir: str = "uploads"
+    max_upload_mb: int = 5
+
     # Only used by the seed script
     seed_admin_name: str = "System Admin"
     seed_admin_email: str = ""
