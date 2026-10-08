@@ -9,6 +9,7 @@ os.environ["APP_ENV"] = "test"
 os.environ["MONGO_DB_NAME"] = "civic_issue_test_db"
 os.environ["JWT_SECRET"] = "test-only-secret-key-for-automated-tests-1234567890"
 os.environ["UPLOAD_DIR"] = TEST_UPLOAD_DIR
+os.environ["DUPLICATE_RADIUS_METERS"] = "100"
 os.environ["SEED_ADMIN_EMAIL"] = "seed-admin@example.com"
 os.environ["SEED_ADMIN_PASSWORD"] = "SeedAdminPass123"
 os.environ["SEED_WORKER_PASSWORD"] = "SeedWorkerPass123"
@@ -21,7 +22,9 @@ from app.core.config import settings
 from app.main import app
 
 TEST_PASSWORD = "Passw0rd123"
-COLLECTIONS_TO_CLEAN = ("users", "departments", "categories", "badges", "complaints", "counters")
+COLLECTIONS_TO_CLEAN = (
+    "users", "departments", "categories", "badges", "complaints", "counters", "upvotes",
+)
 
 
 @pytest.fixture(scope="session")

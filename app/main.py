@@ -1,7 +1,7 @@
 import os
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
@@ -27,6 +27,8 @@ app = FastAPI(
     title="Civic Issue Reporting and Management System",
     version="1.0.0",
     lifespan=lifespan,
+    # Swagger remembers the token after a page refresh (handy while testing)
+    swagger_ui_parameters={"persistAuthorization": True},
 )
 
 app.add_middleware(SecurityHeadersMiddleware)
@@ -52,3 +54,8 @@ async def root():
         "Civic Issue Reporting API is running",
         {"docs": "/docs", "health": "/api/v1/health"},
     )
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return Response(status_code=204)  # the browser asks for a tab icon; we have none

@@ -16,6 +16,9 @@ class Priority(str, Enum):
 
 COMPLAINTS_COLLECTION = "complaints"
 
+# "Active" complaints are the ones still open. Only these count as duplicates.
+ACTIVE_STATUSES = [ComplaintStatus.SUBMITTED.value, ComplaintStatus.IN_PROGRESS.value]
+
 
 def build_complaint_document(
     *,

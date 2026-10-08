@@ -6,14 +6,21 @@ from app.core.database import get_database
 from app.core.errors import ApiError
 from app.core.object_id import parse_object_id
 from app.models.category import CATEGORIES_COLLECTION
-from app.models.complaint import COMPLAINTS_COLLECTION, ComplaintStatus, build_complaint_document
+from app.models.complaint import (
+    ACTIVE_STATUSES,
+    COMPLAINTS_COLLECTION,
+    ComplaintStatus,
+    build_complaint_document,
+)
 from app.models.counter import next_sequence
 from app.models.department import DEPARTMENTS_COLLECTION
-from app.models.user import Role
-from app.services import category_service, image_service
+from app.models.upvote import UPVOTES_COLLECTION
+from app.models.user import USERS_COLLECTION, Role
+from app.services import category_service, geo_service, image_service
 from app.storage import get_storage
 
 PHOTO_FOLDER = "complaints"
+NEARBY_LIMIT = 50
 
 
 def _clean_text(value: str, field: str, min_length: int) -> str:
@@ -38,6 +45,7 @@ def _summary(document: dict | None) -> dict | None:
 
 
 def to_public_complaint(complaint: dict, category: dict | None, department: dict | None) -> dict:
+    """The owner's / admin's view of a complaint."""
     return {
         "id": str(complaint["_id"]),
         "complaintNumber": complaint["complaintNumber"],
@@ -77,6 +85,56 @@ async def _to_public_list(db, complaints: list[dict]) -> list[dict]:
     ]
 
 
+async def to_community_list(db, complaints: list[dict], viewer: dict) -> list[dict]:
+    """How a citizen sees OTHER people's complaints (nearby list, duplicate warning).
+
+    The reporter's id is never shown. Their name is shown only if the complaint is not anonymous.
+    """
+    items = await _to_public_list(db, complaints)
+    if not items:
+        return []
+
+    owner_ids = list({c["reportedBy"] for c in complaints})
+    owner_cursor = db[USERS_COLLECTION].find({"_id": {"$in": owner_ids}}, {"name": 1})
+    owner_names = {user["_id"]: user["name"] for user in await owner_cursor.to_list()}
+
+    complaint_ids = [c["_id"] for c in complaints]
+    upvote_cursor = db[UPVOTES_COLLECTION].find(
+        {"userId": viewer["_id"], "complaintId": {"$in": complaint_ids}}, {"complaintId": 1}
+    )
+    upvoted_ids = {upvote["complaintId"] for upvote in await upvote_cursor.to_list()}
+
+    for item, complaint in zip(items, complaints):
+        item.pop("reportedBy")
+        item["isOwnComplaint"] = complaint["reportedBy"] == viewer["_id"]
+        item["reporter"] = (
+            None if complaint["isAnonymous"] else {"name": owner_names.get(complaint["reportedBy"])}
+        )
+        item["hasUpvoted"] = complaint["_id"] in upvoted_ids
+        if "distanceMeters" in complaint:
+            item["distanceMeters"] = round(complaint["distanceMeters"])
+    return items
+
+
+async def _build_duplicate_response(db, duplicate: dict, reporter: dict) -> dict:
+    existing = (await to_community_list(db, [duplicate], reporter))[0]
+
+    if existing["isOwnComplaint"]:
+        message = "You have already reported this issue nearby."
+    elif existing["hasUpvoted"]:
+        message = "A similar complaint already exists nearby, and you have already upvoted it."
+    else:
+        message = "A similar complaint already exists nearby. You can upvote it instead of creating a new one."
+
+    return {
+        "duplicate": True,
+        "message": message,
+        "existingComplaint": existing,
+        "canUpvote": not existing["isOwnComplaint"] and not existing["hasUpvoted"],
+        "upvoteUrl": f"/api/v1/complaints/{existing['id']}/upvote",
+    }
+
+
 async def create_complaint(
     *,
     reporter: dict,
@@ -87,7 +145,8 @@ async def create_complaint(
     longitude: float,
     is_anonymous: bool,
     photo: UploadFile,
-) -> dict:
+) -> tuple[bool, dict]:
+    """Returns (True, the new complaint) or (False, duplicate information)."""
     db = get_database()
     title = _clean_text(title, "title", 5)
     description = _clean_text(description, "description", 10)
@@ -102,7 +161,13 @@ async def create_complaint(
 
     content, extension = await image_service.read_and_validate_image(photo)
 
-    # Phase 5 adds the "nearby duplicate" check here, before anything is saved.
+    # Duplicate check: an active complaint of the same category within DUPLICATE_RADIUS_METERS.
+    # This runs BEFORE the photo is saved and BEFORE a complaint number is used.
+    duplicate = await geo_service.find_nearby_duplicate(
+        db, category_id=category["_id"], latitude=latitude, longitude=longitude
+    )
+    if duplicate is not None:
+        return False, await _build_duplicate_response(db, duplicate, reporter)
 
     storage = get_storage()
     photo_url = await storage.save(content, extension, PHOTO_FOLDER)
@@ -124,7 +189,28 @@ async def create_complaint(
         await storage.delete(photo_url)  # don't leave a photo that belongs to no complaint
         raise
 
-    return to_public_complaint(document, category, department)
+    return True, to_public_complaint(document, category, department)
+
+
+async def list_nearby_complaints(
+    *, viewer: dict, latitude: float, longitude: float, radius_meters: int, category_id: str | None
+) -> dict:
+    db = get_database()
+    query: dict = {"status": {"$in": ACTIVE_STATUSES}}  # only open complaints can still be upvoted
+    if category_id is not None:
+        category = await category_service.get_category_or_404(category_id)
+        query["categoryId"] = category["_id"]
+
+    complaints = await geo_service.find_nearby_complaints(
+        db,
+        latitude=latitude,
+        longitude=longitude,
+        radius_meters=radius_meters,
+        query=query,
+        limit=NEARBY_LIMIT,
+    )
+    items = await to_community_list(db, complaints, viewer)
+    return {"items": items, "count": len(items), "radiusMeters": radius_meters}
 
 
 async def list_complaints(*, user: dict, status: ComplaintStatus | None, page: int, limit: int) -> dict:
