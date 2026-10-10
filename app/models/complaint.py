@@ -19,6 +19,15 @@ COMPLAINTS_COLLECTION = "complaints"
 # "Active" complaints are the ones still open. Only these count as duplicates.
 ACTIVE_STATUSES = [ComplaintStatus.SUBMITTED.value, ComplaintStatus.IN_PROGRESS.value]
 
+# The ONLY allowed status changes (Phase 6). Anything not listed here is rejected.
+#   SUBMITTED -> IN_PROGRESS -> RESOLVED
+# RESOLVED is final: no way back, and SUBMITTED cannot jump straight to RESOLVED.
+ALLOWED_TRANSITIONS = {
+    ComplaintStatus.SUBMITTED: [ComplaintStatus.IN_PROGRESS],
+    ComplaintStatus.IN_PROGRESS: [ComplaintStatus.RESOLVED],
+    ComplaintStatus.RESOLVED: [],
+}
+
 
 def build_complaint_document(
     *,
