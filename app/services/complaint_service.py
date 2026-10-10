@@ -16,7 +16,8 @@ from app.models.counter import next_sequence
 from app.models.department import DEPARTMENTS_COLLECTION
 from app.models.upvote import UPVOTES_COLLECTION
 from app.models.user import USERS_COLLECTION, Role
-from app.services import category_service, geo_service, image_service
+from app.models.points_ledger import PointsEvent
+from app.services import category_service, gamification_service, geo_service, image_service
 from app.storage import get_storage
 
 PHOTO_FOLDER = "complaints"
@@ -188,6 +189,11 @@ async def create_complaint(
     except Exception:
         await storage.delete(photo_url)  # don't leave a photo that belongs to no complaint
         raise
+
+    # Reward the reporter (only for a NEW complaint, never for a duplicate). Never raises.
+    await gamification_service.award_points(
+        user_id=reporter["_id"], event=PointsEvent.COMPLAINT_CREATED, complaint_id=document["_id"], db=db
+    )
 
     return True, to_public_complaint(document, category, department)
 

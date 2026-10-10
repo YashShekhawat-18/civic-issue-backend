@@ -1,4 +1,4 @@
-from pydantic import SecretStr
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -17,7 +17,16 @@ class Settings(BaseSettings):
     jwt_expires_minutes: int = 60
 
     duplicate_radius_meters: int = 100
-    overdue_days: int = 3
+
+    # Overdue job (Phase 8)
+    overdue_days: int = Field(default=3, ge=1)           # unresolved for this many days = overdue
+    overdue_check_minutes: int = Field(default=60, ge=1)  # how often the job runs
+    scheduler_enabled: bool = True                        # SCHEDULER_ENABLED=false switches the job off
+
+    # Points (Phase 9). Set a value to 0 to switch that reward off.
+    points_complaint_created: int = Field(default=10, ge=0)    # citizen reports a NEW complaint
+    points_complaint_upvoted: int = Field(default=2, ge=0)     # citizen upvotes someone's complaint (once per complaint)
+    points_complaint_resolved: int = Field(default=20, ge=0)   # reporter's complaint gets RESOLVED
 
     # Photo uploads
     upload_dir: str = "uploads"

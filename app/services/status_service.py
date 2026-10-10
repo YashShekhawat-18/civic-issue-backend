@@ -9,7 +9,8 @@ from app.core.errors import ApiError
 from app.core.object_id import parse_object_id
 from app.models.complaint import ALLOWED_TRANSITIONS, COMPLAINTS_COLLECTION, ComplaintStatus
 from app.models.department import DEPARTMENTS_COLLECTION
-from app.services import notification_service, worker_service
+from app.models.points_ledger import PointsEvent
+from app.services import gamification_service, notification_service, worker_service
 
 
 async def change_status(
@@ -66,5 +67,11 @@ async def change_status(
         note=note,
         background_tasks=background_tasks,
     )
+
+    # 5. Reward the citizen whose complaint got resolved. Never raises.
+    if new_status == ComplaintStatus.RESOLVED:
+        await gamification_service.award_points(
+            user_id=updated["reportedBy"], event=PointsEvent.COMPLAINT_RESOLVED, complaint_id=updated["_id"], db=db
+        )
 
     return (await worker_service.to_worker_views(db, [updated]))[0]

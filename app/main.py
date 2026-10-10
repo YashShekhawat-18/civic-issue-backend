@@ -9,6 +9,7 @@ from app.core.config import settings, validate_settings
 from app.core.database import close_mongo_connection, connect_to_mongo
 from app.core.errors import register_exception_handlers
 from app.core.responses import success_response
+from app.jobs.scheduler import start_scheduler, stop_scheduler
 from app.middleware.security_headers import SecurityHeadersMiddleware
 from app.models.indexes import create_all_indexes
 from app.routes import api_router
@@ -19,7 +20,9 @@ async def lifespan(app: FastAPI):
     validate_settings()           # refuse to start with an unsafe JWT secret
     await connect_to_mongo()
     await create_all_indexes()    # unique indexes, 2dsphere index, etc.
+    start_scheduler()             # overdue check runs in the background
     yield
+    stop_scheduler()
     await close_mongo_connection()
 
 

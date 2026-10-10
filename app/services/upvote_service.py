@@ -6,7 +6,9 @@ from app.core.database import get_database
 from app.core.errors import ApiError
 from app.core.object_id import parse_object_id
 from app.models.complaint import COMPLAINTS_COLLECTION, ComplaintStatus
+from app.models.points_ledger import PointsEvent
 from app.models.upvote import UPVOTES_COLLECTION, build_upvote_document
+from app.services import gamification_service
 
 
 async def _get_complaint_or_404(db, complaint_id: str) -> dict:
@@ -45,6 +47,11 @@ async def add_upvote(complaint_id: str, user_id: ObjectId, db=None) -> dict:
     if updated is None:  # the complaint disappeared in between: undo step 1
         await db[UPVOTES_COLLECTION].delete_one({"complaintId": complaint["_id"], "userId": user_id})
         raise ApiError(404, "Complaint not found")
+
+    # Points for the upvoter, once per complaint (the ledger ignores repeats). Never raises.
+    await gamification_service.award_points(
+        user_id=user_id, event=PointsEvent.COMPLAINT_UPVOTED, complaint_id=complaint["_id"], db=db
+    )
 
     return {"complaintId": str(complaint["_id"]), "upvoteCount": updated["upvoteCount"], "hasUpvoted": True}
 
