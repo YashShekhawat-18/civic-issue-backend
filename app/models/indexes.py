@@ -1,4 +1,5 @@
 from app.core.database import get_database
+from app.models.audit_log import create_audit_log_indexes
 from app.models.badge import create_badge_indexes
 from app.models.category import create_category_indexes
 from app.models.complaint import create_complaint_indexes
@@ -20,3 +21,4 @@ async def create_all_indexes(db=None) -> None:
     await create_upvote_indexes(db)
     await create_notification_indexes(db)
     await create_points_ledger_indexes(db)
+    await create_audit_log_indexes(db)

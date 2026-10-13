@@ -13,9 +13,3 @@ router = APIRouter(
 async def list_categories():
     categories = await category_service.list_active_categories()
     return success_response("Categories fetched", categories)
-
-
-@router.get("/{category_id}")
-async def get_category(category_id: str):
-    category = await category_service.get_category_details(category_id)
-    return success_response("Category fetched", category)

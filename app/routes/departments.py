@@ -4,18 +4,13 @@ from app.core.dependencies import get_current_user
 from app.core.responses import success_response
 from app.services import department_service
 
-router = APIRouter(
-    prefix="/departments", tags=["Departments"], dependencies=[Depends(get_current_user)]
-)
+router = APIRouter(prefix="/departments", tags=["Departments"], dependencies=[Depends(get_current_user)])
 
 
 @router.get("")
 async def list_departments():
-    departments = await department_service.list_active_departments()
-    return success_response("Departments fetched", departments)
+    return success_response("Departments fetched", await department_service.list_active_departments())
 
-
-@router.get("/{department_id}")
-async def get_department(department_id: str):
-    department = await department_service.get_department_or_404(department_id)
-    return success_response("Department fetched", department_service.to_public_department(department))
+# GET /departments/{id} lives in catalog_admin.py (admins may also see inactive departments).
+# It must exist exactly once: two routes with the same method + URL are resolved by registration
+# order, and that is easy to get wrong.

@@ -28,6 +28,14 @@ class Settings(BaseSettings):
     points_complaint_upvoted: int = Field(default=2, ge=0)     # citizen upvotes someone's complaint (once per complaint)
     points_complaint_resolved: int = Field(default=20, ge=0)   # reporter's complaint gets RESOLVED
 
+    # Security (Phase 11)
+    rate_limit_enabled: bool = True
+    rate_limit_login_max: int = Field(default=10, ge=1)      # login attempts per IP per window
+    rate_limit_register_max: int = Field(default=5, ge=1)    # sign-ups per IP per window
+    rate_limit_window_seconds: int = Field(default=900, ge=1)
+    trust_proxy_headers: bool = False                        # True only behind your own reverse proxy
+    max_json_body_kb: int = Field(default=256, ge=1)         # biggest allowed non-upload request body
+
     # Photo uploads
     upload_dir: str = "uploads"
     max_upload_mb: int = 5
