@@ -5,3 +5,9 @@ export const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:800
 export const FILES_URL = API_URL.replace(/\/api\/v1$/, "");
 
 export const TOKEN_KEY = "civic_access_token";
+
+// Backend sends photo paths like "/uploads/complaints/abc.jpg". Turn them into a full URL.
+export function photoSrc(photoUrl) {
+  if (!photoUrl) return "";
+  return /^https?:\/\//.test(photoUrl) ? photoUrl : `${FILES_URL}${photoUrl}`;
+}

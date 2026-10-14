@@ -14,7 +14,10 @@ export function homeFor(role) {
 
 // Menu links per role (extended in later phases).
 export const ROLE_MENU = {
-  CITIZEN: [{ href: "/citizen", label: "Home" }],
+  CITIZEN: [
+    { href: "/citizen", label: "Home" },
+    { href: "/citizen/report", label: "Report issue" },
+  ],
   WORKER: [{ href: "/worker", label: "My tasks" }],
   ADMIN: [{ href: "/admin", label: "Dashboard" }],
 };
