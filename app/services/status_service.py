@@ -1,7 +1,7 @@
 """Changing a complaint's status. Used by the worker portal and by admins."""
 from datetime import datetime, timezone
 
-from fastapi import BackgroundTasks
+from fastapi import BackgroundTasks, UploadFile
 from pymongo import ReturnDocument
 
 from app.core.database import get_database
@@ -12,7 +12,26 @@ from app.models.complaint import ALLOWED_TRANSITIONS, COMPLAINTS_COLLECTION, Com
 from app.models.department import DEPARTMENTS_COLLECTION
 from app.models.points_ledger import PointsEvent
 from app.models.user import Role
-from app.services import audit_service, gamification_service, notification_service, worker_service
+from app.services import (
+    audit_service,
+    gamification_service,
+    image_service,
+    notification_service,
+    worker_service,
+)
+from app.storage import get_storage
+
+RESOLUTION_PHOTO_FOLDER = "resolutions"
+
+
+def ensure_transition_allowed(current_status: ComplaintStatus, new_status: ComplaintStatus) -> None:
+    if new_status not in ALLOWED_TRANSITIONS[current_status]:
+        allowed = [s.value for s in ALLOWED_TRANSITIONS[current_status]]
+        hint = f"Allowed next status: {', '.join(allowed)}" if allowed else "This complaint is already resolved"
+        raise ApiError(
+            409,
+            f"Cannot change status from {current_status.value} to {new_status.value}. {hint}",
+        )
 
 
 async def change_status(
@@ -22,6 +41,7 @@ async def change_status(
     note: str | None,
     worker: dict,
     background_tasks: BackgroundTasks,
+    extra_changes: dict | None = None,
 ) -> dict:
     db = get_database()
     complaints = db[COMPLAINTS_COLLECTION]
@@ -38,16 +58,10 @@ async def change_status(
 
     # 2. The status change must be one of the allowed transitions.
     current_status = ComplaintStatus(complaint["status"])
-    if new_status not in ALLOWED_TRANSITIONS[current_status]:
-        allowed = [s.value for s in ALLOWED_TRANSITIONS[current_status]]
-        hint = f"Allowed next status: {', '.join(allowed)}" if allowed else "This complaint is already resolved"
-        raise ApiError(
-            409,
-            f"Cannot change status from {current_status.value} to {new_status.value}. {hint}",
-        )
+    ensure_transition_allowed(current_status, new_status)
 
     now = datetime.now(timezone.utc)
-    changes: dict = {"status": new_status.value, "updatedAt": now}
+    changes: dict = {"status": new_status.value, "updatedAt": now, **(extra_changes or {})}
     if new_status == ComplaintStatus.IN_PROGRESS and not is_admin:
         changes["assignedWorker"] = worker["_id"]  # the worker who starts the job owns it
     if new_status == ComplaintStatus.RESOLVED:
@@ -94,3 +108,38 @@ async def change_status(
         )
 
     return (await worker_service.to_worker_views(db, [updated]))[0]
+
+
+async def resolve_with_photo(
+    *,
+    complaint_id: str,
+    photo: UploadFile,
+    note: str | None,
+    worker: dict,
+    background_tasks: BackgroundTasks,
+) -> dict:
+    """A worker marks a complaint RESOLVED. This needs an after-fix photo taken at the place."""
+    db = get_database()
+    complaint = await worker_service.get_department_complaint_document(worker=worker, complaint_id=complaint_id)
+    ensure_transition_allowed(ComplaintStatus(complaint["status"]), ComplaintStatus.RESOLVED)
+
+    longitude, latitude = complaint["location"]["coordinates"]
+    content, extension, position = await image_service.read_geotagged_image(
+        photo, latitude=latitude, longitude=longitude, place="the reported location"
+    )
+
+    storage = get_storage()
+    photo_url = await storage.save(content, extension, RESOLUTION_PHOTO_FOLDER)
+    location = None if position is None else {"type": "Point", "coordinates": [position[1], position[0]]}
+    try:
+        return await change_status(
+            complaint_id=complaint_id,
+            new_status=ComplaintStatus.RESOLVED,
+            note=note,
+            worker=worker,
+            background_tasks=background_tasks,
+            extra_changes={"resolutionPhotoUrl": photo_url, "resolutionPhotoLocation": location},
+        )
+    except Exception:
+        await storage.delete(photo_url)  # the status did not change, so do not keep the photo
+        raise

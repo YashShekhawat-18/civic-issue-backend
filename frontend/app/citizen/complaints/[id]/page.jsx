@@ -67,6 +67,14 @@ export default function ComplaintDetailPage() {
         <MapView center={{ lat, lng }} zoom={16} markers={[{ id: c.id, lat, lng, status: c.status }]} label="Where the issue is" height={288} />
       </div>
 
+      {c.resolutionPhotoUrl && (
+        <figure>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={photoSrc(c.resolutionPhotoUrl)} alt="Photo of the finished work" className="h-72 w-full rounded-2xl border border-line object-cover md:w-1/2" />
+          <figcaption className="mt-1.5 text-xs font-medium text-asphalt-soft">Photo of the finished work, taken at the spot</figcaption>
+        </figure>
+      )}
+
       <section className={`${plate} p-5`}>
         <h2 className="text-lg font-bold">What you reported</h2>
         <p className="mt-2 whitespace-pre-line text-asphalt/90">{c.description}</p>

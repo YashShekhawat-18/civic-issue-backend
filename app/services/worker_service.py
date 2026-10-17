@@ -52,6 +52,8 @@ async def to_worker_views(db, complaints: list[dict]) -> list[dict]:
                 "category": _summary(categories.get(complaint["categoryId"])),
                 "department": _summary(departments.get(complaint["departmentId"])),
                 "photoUrl": complaint["photoUrl"],
+                "photoGeotagged": complaint.get("photoLocation") is not None,
+                "resolutionPhotoUrl": complaint.get("resolutionPhotoUrl"),
                 "location": complaint["location"],
                 "status": complaint["status"],
                 "allowedNextStatuses": [s.value for s in ALLOWED_TRANSITIONS[status]],
@@ -95,7 +97,7 @@ async def list_department_complaints(
     return {"items": await to_worker_views(db, complaints), "page": page, "limit": limit, "total": total}
 
 
-async def get_department_complaint(*, worker: dict, complaint_id: str) -> dict:
+async def get_department_complaint_document(*, worker: dict, complaint_id: str) -> dict:
     db = get_database()
     object_id = parse_object_id(complaint_id, "complaint id")
     complaint = await db[COMPLAINTS_COLLECTION].find_one(
@@ -104,4 +106,9 @@ async def get_department_complaint(*, worker: dict, complaint_id: str) -> dict:
     if complaint is None:
         # Same answer for "does not exist" and "belongs to another department"
         raise ApiError(404, "Complaint not found")
-    return (await to_worker_views(db, [complaint]))[0]
+    return complaint
+
+
+async def get_department_complaint(*, worker: dict, complaint_id: str) -> dict:
+    complaint = await get_department_complaint_document(worker=worker, complaint_id=complaint_id)
+    return (await to_worker_views(get_database(), [complaint]))[0]

@@ -4,20 +4,25 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { IconCompass, IconHome, IconList, IconPlus } from "./icons";
 
-const TABS = [
+export const CITIZEN_TABS = [
   { href: "/citizen", label: "Home", Icon: IconHome, exact: true },
   { href: "/citizen/complaints", label: "My complaints", Icon: IconList },
   { href: "/citizen/report", label: "Report", Icon: IconPlus, primary: true },
   { href: "/citizen/nearby", label: "Nearby", Icon: IconCompass },
 ];
 
+export const WORKER_TABS = [
+  { href: "/worker", label: "Dashboard", Icon: IconHome, exact: true },
+  { href: "/worker/tasks", label: "Tasks", Icon: IconList },
+];
+
 // Phone navigation: stays within thumb reach. Hidden on larger screens (the top bar takes over).
-export default function BottomNav() {
+export default function BottomNav({ tabs = CITIZEN_TABS }) {
   const pathname = usePathname();
   return (
     <nav aria-label="Main" className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-white md:hidden">
-      <ul className="mx-auto grid max-w-md grid-cols-4">
-        {TABS.map(({ href, label, Icon, exact, primary }) => {
+      <ul className="mx-auto grid max-w-md" style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}>
+        {tabs.map(({ href, label, Icon, exact, primary }) => {
           const active = exact ? pathname === href : pathname.startsWith(href);
           return (
             <li key={href}>

@@ -1,4 +1,5 @@
 """Small helpers shared by the complaint, duplicate and upvote tests."""
+from geotag_support import geotagged_jpeg
 
 COMPLAINTS_URL = "/api/v1/complaints"
 PNG_BYTES = b"\x89PNG\r\n\x1a\n" + b"fake-image-data"  # starts like a real PNG
@@ -29,7 +30,13 @@ def complaint_form(sync_db, code="POTHOLE", spot=0, meters_north=0, **changes):
     return form
 
 
-def post_complaint(client, headers, form, filename="pothole.png", content=PNG_BYTES, content_type="image/png"):
+def post_complaint(client, headers, form, filename="pothole.jpg", content=None, content_type="image/jpeg"):
+    """By default the photo is a JPEG geotagged at the position in the form."""
+    if content is None:
+        try:
+            content = geotagged_jpeg(float(form["latitude"]), float(form["longitude"]))
+        except ValueError:  # a test that sends a broken coordinate on purpose
+            content = geotagged_jpeg(BASE_LATITUDE, BASE_LONGITUDE)
     return client.post(
         COMPLAINTS_URL,
         data=form,

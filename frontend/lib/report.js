@@ -1,17 +1,22 @@
 // Rules for the "report an issue" form. They mirror the backend (title 5-150, description 10-2000,
-// JPEG/PNG/WebP up to 5 MB) so the citizen gets instant feedback; the backend still re-checks everything.
+// geotagged JPEG up to 5 MB) so the citizen gets instant feedback; the backend still re-checks everything.
+import { photoPlaceProblem } from "./geotag";
+
 export const MAX_PHOTO_MB = 5;
-export const ALLOWED_PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
+// Only a JPEG can carry the GPS position the app needs, so that is all we accept.
+export const ALLOWED_PHOTO_TYPES = ["image/jpeg"];
 
 export function validatePhoto(file) {
   if (!file) return "Please add a photo of the issue";
-  if (!ALLOWED_PHOTO_TYPES.includes(file.type)) return "Photo must be a JPEG, PNG or WebP image";
+  if (!ALLOWED_PHOTO_TYPES.includes(file.type))
+    return "Photo must be a JPEG taken with your camera's location turned on. PNG and WebP files have no location.";
   if (file.size === 0) return "The photo file is empty";
   if (file.size > MAX_PHOTO_MB * 1024 * 1024) return `Photo is too large (maximum ${MAX_PHOTO_MB} MB)`;
   return null;
 }
 
-export function validateReport({ categoryId, title, description, location, photo }) {
+// photoGps: {lat, lng} read from the photo, null when it has none, undefined when not read yet.
+export function validateReport({ categoryId, title, description, location, photo, photoGps }) {
   const errors = {};
   if (!categoryId) errors.categoryId = "Choose a category";
   const t = title.trim();
@@ -21,7 +26,7 @@ export function validateReport({ categoryId, title, description, location, photo
   if (d.length < 10) errors.description = "Description must be at least 10 characters";
   else if (d.length > 2000) errors.description = "Description must be at most 2000 characters";
   if (!location) errors.location = "Pick the location on the map";
-  const photoError = validatePhoto(photo);
+  const photoError = validatePhoto(photo) || (photo && photoGps !== undefined ? photoPlaceProblem(photoGps, location, "the pinned location") : "");
   if (photoError) errors.photo = photoError;
   return errors;
 }

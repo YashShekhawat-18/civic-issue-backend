@@ -15,6 +15,7 @@ vi.mock("@/components/LocationPickerLoader", () => ({
 }));
 
 import ReportPage from "@/app/citizen/report/page";
+import { gpsPhoto, noGpsPhoto } from "./photos";
 
 const CATS = [{ id: "c1", name: "Pothole" }, { id: "c2", name: "Garbage" }];
 let calls;
@@ -36,8 +37,9 @@ async function fillValid(user) {
   await user.selectOptions(screen.getByLabelText("Category"), "c1");
   await user.type(screen.getByLabelText("Title"), "Big pothole");
   await user.type(screen.getByLabelText("Description"), "Deep pothole near the bus stop");
-  await user.upload(screen.getByLabelText(/Photo/), new File([new Uint8Array(20)], "p.png", { type: "image/png" }));
-  await user.click(screen.getByText("pick-point"));
+  await user.upload(screen.getByLabelText(/Photo/), gpsPhoto());
+  // the photo carries its position, so the pin is placed automatically
+  await waitFor(() => expect(screen.getByTestId("picked")).toHaveTextContent("19.1867,73.192"));
 }
 
 beforeEach(() => window.localStorage.setItem("civic_access_token", "T"));
@@ -68,9 +70,54 @@ describe("report page", () => {
     expect(await screen.findByTestId("complaint-number")).toHaveTextContent("CIV-2026-000007");
     const post = calls.find((c) => c.method === "POST");
     expect(post.body).toBeInstanceOf(FormData);
-    expect(post.body.get("latitude")).toBe("19.076");
+    expect(post.body.get("latitude")).toBe("19.1867");
+    expect(post.body.get("longitude")).toBe("73.192");
     expect(post.body.get("categoryId")).toBe("c1");
-    expect(post.body.get("photo").name).toBe("p.png");
+    expect(post.body.get("photo").name).toBe("at-the-spot.jpg");
+  });
+
+  it("tells the citizen the pin came from the photo", async () => {
+    backend({});
+    const user = userEvent.setup();
+    render(<ReportPage />);
+    await fillValid(user);
+    expect(screen.getByTestId("photo-gps-ok")).toHaveTextContent("Location found in the photo");
+  });
+
+  it("rejects a photo without GPS before anything is sent", async () => {
+    backend({});
+    const user = userEvent.setup();
+    render(<ReportPage />);
+    await screen.findByRole("option", { name: "Pothole" });
+    await user.upload(screen.getByLabelText(/Photo/), noGpsPhoto());
+    expect(await screen.findByTestId("photo-problem")).toHaveTextContent("no GPS location");
+    await user.selectOptions(screen.getByLabelText("Category"), "c1");
+    await user.type(screen.getByLabelText("Title"), "Big pothole");
+    await user.type(screen.getByLabelText("Description"), "Deep pothole near the bus stop");
+    await user.click(screen.getByText("pick-point"));
+    await user.click(screen.getByRole("button", { name: "Submit complaint" }));
+    expect(screen.getByTestId("photo-problem")).toHaveTextContent("no GPS location");
+    expect(calls.some((c) => c.method === "POST")).toBe(false);
+  });
+
+  it("tells the citizen at once when the file is a PNG", async () => {
+    backend({});
+    const user = userEvent.setup({ applyAccept: false }); // the file picker would hide a PNG; a drag-and-drop would not
+    render(<ReportPage />);
+    await screen.findByRole("option", { name: "Pothole" });
+    await user.upload(screen.getByLabelText(/Photo/), new File([new Uint8Array(20)], "shot.png", { type: "image/png" }));
+    expect(await screen.findByTestId("photo-problem")).toHaveTextContent(/JPEG.*location/);
+  });
+
+  it("rejects a photo taken far from the pin and says how far", async () => {
+    backend({});
+    const user = userEvent.setup();
+    render(<ReportPage />);
+    await fillValid(user);
+    await user.click(screen.getByText("pick-point")); // moves the pin about 150 km away
+    expect(await screen.findByTestId("photo-problem")).toHaveTextContent(/taken [\d.]+ (m|km) from the pinned location/);
+    await user.click(screen.getByRole("button", { name: "Submit complaint" }));
+    expect(calls.some((c) => c.method === "POST")).toBe(false);
   });
 
   it("shows the duplicate warning and lets the citizen upvote", async () => {

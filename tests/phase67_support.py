@@ -2,6 +2,7 @@
 import pytest
 from bson import ObjectId
 from civic_test_helpers import complaint_form, post_complaint
+from geotag_support import geotagged_jpeg, untagged_jpeg
 
 WORKER_URL = "/api/v1/worker/complaints"
 NOTIFICATIONS_URL = "/api/v1/notifications"
@@ -33,7 +34,27 @@ def make_complaint(client, headers, sync_db, code="POTHOLE", spot=0, **changes):
     return response.json()["data"]["id"]
 
 
+def resolve_with_photo(client, headers, complaint_id, content=None, **form):
+    """A worker resolves a complaint. By default the photo is geotagged at the complaint's position."""
+    if content is None:
+        found = client.get(f"{WORKER_URL}/{complaint_id}", headers=headers)
+        if found.status_code == 200:
+            longitude, latitude = found.json()["data"]["location"]["coordinates"]
+            content = geotagged_jpeg(latitude, longitude)
+        else:
+            content = untagged_jpeg()  # a 404 is answered before the photo is looked at
+    return client.post(
+        f"{WORKER_URL}/{complaint_id}/resolve",
+        data=form,
+        files={"photo": ("after.jpg", content, "image/jpeg")},
+        headers=headers,
+    )
+
+
 def set_status(client, headers, complaint_id, status, **extra):
+    """Changes a status the way the portal does. RESOLVED goes through the photo endpoint."""
+    if status == "RESOLVED":
+        return resolve_with_photo(client, headers, complaint_id, **extra)
     return client.patch(
         f"{WORKER_URL}/{complaint_id}/status", json={"status": status, **extra}, headers=headers
     )

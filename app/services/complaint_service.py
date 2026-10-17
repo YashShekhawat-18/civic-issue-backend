@@ -55,6 +55,8 @@ def to_public_complaint(complaint: dict, category: dict | None, department: dict
         "category": _summary(category),
         "department": _summary(department),
         "photoUrl": complaint["photoUrl"],
+        "photoGeotagged": complaint.get("photoLocation") is not None,
+        "resolutionPhotoUrl": complaint.get("resolutionPhotoUrl"),
         "location": complaint["location"],
         "status": complaint["status"],
         "priority": complaint["priority"],
@@ -160,7 +162,9 @@ async def create_complaint(
     if department is None:
         raise ApiError(409, "This category is not linked to an active department")
 
-    content, extension = await image_service.read_and_validate_image(photo)
+    content, extension, photo_position = await image_service.read_geotagged_image(
+        photo, latitude=latitude, longitude=longitude, place="the pinned location"
+    )
 
     # Duplicate check: an active complaint of the same category within DUPLICATE_RADIUS_METERS.
     # This runs BEFORE the photo is saved and BEFORE a complaint number is used.
@@ -184,6 +188,7 @@ async def create_complaint(
             latitude=latitude,
             longitude=longitude,
             is_anonymous=is_anonymous,
+            photo_location=photo_position,
         )
         await db[COMPLAINTS_COLLECTION].insert_one(document)
     except Exception:

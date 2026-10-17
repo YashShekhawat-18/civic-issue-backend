@@ -9,6 +9,7 @@ from civic_test_helpers import (
     complaint_form,
     post_complaint,
 )
+from geotag_support import geotagged_jpeg
 from pymongo import AsyncMongoClient
 
 from app.core.config import settings
@@ -150,17 +151,16 @@ def test_client_cannot_choose_department_or_reporter(client, create_user, sync_d
 def test_unsafe_filename_is_replaced_and_photo_is_served(client, create_user, sync_db):
     headers = create_user()
 
-    response = post_complaint(
-        client, headers, complaint_form(sync_db), filename="../../evil.php.png"
-    )
+    form = complaint_form(sync_db)
+    response = post_complaint(client, headers, form, filename="../../evil.php.jpg")
     photo_url = response.json()["data"]["photoUrl"]
 
     assert "evil" not in photo_url and ".." not in photo_url
-    assert photo_url.endswith(".png")
+    assert photo_url.endswith(".jpg")
     assert (Path(settings.upload_dir) / photo_url.removeprefix("/uploads/")).exists()
     served = client.get(photo_url)
     assert served.status_code == 200
-    assert served.content == PNG_BYTES
+    assert served.content == geotagged_jpeg(float(form["latitude"]), float(form["longitude"]))
 
 
 def test_complaint_numbers_increase(client, create_user, sync_db):

@@ -49,7 +49,7 @@ contains `duplicate: true` and the `upvoteUrl` instead.
 
 ## Endpoints
 
-_49 endpoints. Every URL starts with `http://127.0.0.1:8000` while you develop._
+_50 endpoints. Every URL starts with `http://127.0.0.1:8000` while you develop._
 
 ### Health
 
@@ -98,7 +98,7 @@ The 15 issue categories and the department each one belongs to.
 |---|---|---|---|
 | GET | `/api/v1/categories` | Any logged-in user | List Categories. |
 | POST | `/api/v1/categories` | ADMIN | Create a category (admin). |
-| GET | `/api/v1/categories/{category_id}` | Any logged-in user | Get Category. |
+| GET | `/api/v1/categories/{category_id}` | Any logged-in user | One category. |
 | PATCH | `/api/v1/categories/{category_id}` | ADMIN | Edit a category (admin). |
 | DELETE | `/api/v1/categories/{category_id}` | ADMIN | Deactivate a category (admin). |
 
@@ -126,6 +126,7 @@ Worker portal: complaints of my own department and status changes.
 |---|---|---|---|
 | GET | `/api/v1/worker/complaints` | WORKER | List My Department Complaints. Filters: `status`, `assignedToMe`, `overdue`, `page`, `limit`. |
 | GET | `/api/v1/worker/complaints/{complaint_id}` | WORKER | Get Complaint. |
+| POST | `/api/v1/worker/complaints/{complaint_id}/resolve` | WORKER | Mark RESOLVED with a geotagged after-fix photo. |
 | PATCH | `/api/v1/worker/complaints/{complaint_id}/status` | WORKER | Update Status. |
 
 ### Notifications

@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
-import { buildReportFormData, validateReport } from "@/lib/report";
+import { buildReportFormData, validatePhoto, validateReport } from "@/lib/report";
+import { readPhotoGps, photoPlaceProblem } from "@/lib/geotag";
 import { fieldErrorsFromApi } from "@/lib/validation";
 import Alert from "@/components/Alert";
 import Spinner from "@/components/Spinner";
@@ -22,6 +23,7 @@ export default function ReportPage() {
   const [form, setForm] = useState(EMPTY);
   const [location, setLocation] = useState(null);
   const [photo, setPhoto] = useState(null);
+  const [photoGps, setPhotoGps] = useState(undefined); // {lat,lng} from the photo, null = none, undefined = not read yet
   const [preview, setPreview] = useState("");
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState("");
@@ -45,13 +47,26 @@ export default function ReportPage() {
   const previewRef = useRef("");
   useEffect(() => () => previewRef.current && URL.revokeObjectURL(previewRef.current), []);
 
-  function onPhotoChange(e) {
+  async function onPhotoChange(e) {
     const file = e.target.files?.[0] || null;
     if (previewRef.current) URL.revokeObjectURL(previewRef.current);
     previewRef.current = file ? URL.createObjectURL(file) : "";
     setPhoto(file);
+    setPhotoGps(undefined);
     setPreview(previewRef.current);
+    setErrors((prev) => ({ ...prev, photo: undefined }));
+    if (!file) return;
+    // The photo says where it was taken: put the map pin there for the citizen.
+    const gps = await readPhotoGps(file);
+    if (fileInput.current?.files?.[0] !== file) return; // another photo was chosen meanwhile
+    setPhotoGps(gps);
+    if (gps) setLocation(gps);
   }
+
+  // What we know about the photo's position right now (shown under the photo).
+  const typeProblem = photo ? validatePhoto(photo) : "";
+  const photoProblem = typeProblem || (photo && photoGps !== undefined ? photoPlaceProblem(photoGps, location, "the pinned location") : "");
+  const photoFound = photo && photoGps && !photoProblem;
 
   const onChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -61,7 +76,9 @@ export default function ReportPage() {
   async function onSubmit(e) {
     e.preventDefault();
     setServerError("");
-    const found = validateReport({ ...form, location, photo });
+    const gps = photo && photoGps === undefined ? await readPhotoGps(photo) : photoGps;
+    if (gps !== photoGps) setPhotoGps(gps);
+    const found = validateReport({ ...form, location, photo, photoGps: gps });
     setErrors(found);
     if (Object.keys(found).length) return;
 
@@ -90,6 +107,7 @@ export default function ReportPage() {
     setForm(EMPTY);
     setLocation(null);
     setPhoto(null);
+    setPhotoGps(undefined);
     setPreview("");
     setErrors({});
     setCreated(null);
@@ -183,14 +201,14 @@ export default function ReportPage() {
 
         <div>
           <label htmlFor="photo" className="mb-1.5 block text-sm font-semibold">
-            Photo (JPEG, PNG or WebP, up to 5 MB)
+            Photo taken at the spot (JPEG with location, up to 5 MB)
           </label>
           <input
             ref={fileInput}
             id="photo"
             name="photo"
             type="file"
-            accept="image/jpeg,image/png,image/webp"
+            accept="image/jpeg"
             onChange={onPhotoChange}
             className="block w-full rounded-lg border border-dashed border-line bg-concrete/60 p-3 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-asphalt file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white"
           />
@@ -198,7 +216,16 @@ export default function ReportPage() {
             // eslint-disable-next-line @next/next/no-img-element
             <img src={preview} alt="Selected photo preview" className="mt-3 h-36 rounded-lg border border-line object-cover" />
           )}
-          {errors.photo && <p className="mt-1.5 text-xs font-medium text-flag">{errors.photo}</p>}
+          {photoFound && (
+            <p className="mt-1.5 text-xs font-medium text-highway-deep" data-testid="photo-gps-ok">
+              Location found in the photo. The pin was set for you.
+            </p>
+          )}
+          {(errors.photo || photoProblem) && (
+            <p className="mt-1.5 text-xs font-medium text-flag" data-testid="photo-problem">
+              {errors.photo || photoProblem}
+            </p>
+          )}
         </div>
 
         <div>

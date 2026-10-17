@@ -41,6 +41,7 @@ def build_complaint_document(
     latitude: float,
     longitude: float,
     is_anonymous: bool,
+    photo_location: tuple[float, float] | None = None,  # (latitude, longitude) read from the photo
 ) -> dict:
     now = datetime.now(timezone.utc)
     return {
@@ -52,6 +53,12 @@ def build_complaint_document(
         "reportedBy": reported_by,
         "assignedWorker": None,
         "photoUrl": photo_url,
+        # Where the photo says it was taken (GeoJSON order [longitude, latitude]); None if unknown
+        "photoLocation": (
+            None if photo_location is None else {"type": "Point", "coordinates": [photo_location[1], photo_location[0]]}
+        ),
+        "resolutionPhotoUrl": None,       # the worker's after-fix photo, set when RESOLVED
+        "resolutionPhotoLocation": None,
         # GeoJSON Point: the order is [longitude, latitude]
         "location": {"type": "Point", "coordinates": [longitude, latitude]},
         "status": ComplaintStatus.SUBMITTED.value,  # always starts as SUBMITTED

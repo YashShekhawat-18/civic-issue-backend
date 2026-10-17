@@ -22,6 +22,9 @@ export const ROLE_MENU = {
     { href: "/citizen/notifications", label: "Alerts" },
     { href: "/citizen/rewards", label: "Rewards" },
   ],
-  WORKER: [{ href: "/worker", label: "My tasks" }],
+  WORKER: [
+    { href: "/worker", label: "Dashboard" },
+    { href: "/worker/tasks", label: "Tasks" },
+  ],
   ADMIN: [{ href: "/admin", label: "Dashboard" }],
 };

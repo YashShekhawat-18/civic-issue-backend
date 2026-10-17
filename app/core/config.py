@@ -40,6 +40,11 @@ class Settings(BaseSettings):
     upload_dir: str = "uploads"
     max_upload_mb: int = 5
 
+    # Geotagged photos: a photo must carry the GPS position of where it was taken (JPEG).
+    # REQUIRE_PHOTO_GPS=false switches the rule off (for example for a quick demo with any photo).
+    require_photo_gps: bool = True
+    geotag_max_distance_meters: int = Field(default=300, ge=10)  # photo position vs. complaint position
+
     # Email (Phase 7). Leave SMTP_HOST empty and the app simply skips sending emails.
     smtp_host: str = ""
     smtp_port: int = 587
