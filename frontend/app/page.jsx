@@ -37,6 +37,12 @@ export default function LandingPage() {
             Log in
           </Link>
         </div>
+        <p className="mt-5 text-sm text-asphalt-soft">
+          City staff?{" "}
+          <Link href="/login?as=worker" className="font-semibold text-sign hover:underline">Worker log in</Link>
+          {" or "}
+          <Link href="/login?as=admin" className="font-semibold text-sign hover:underline">Admin log in</Link>
+        </p>
       </section>
 
       <section aria-label="Example complaint" className={`${plate} p-5 shadow-sm`}>

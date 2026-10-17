@@ -31,6 +31,16 @@ const wrap = (ui) => render(<AuthProvider>{ui}</AuthProvider>);
 beforeEach(() => { replace.mockClear(); search = ""; pathname = "/"; });
 
 describe("login page", () => {
+  it("has Citizen, Worker and Admin tabs, and ?as= picks the heading", async () => {
+    respond({ "GET /auth/me": [401, { success: false, message: "x" }] });
+    search = "as=worker";
+    wrap(<LoginPage />);
+    expect(await screen.findByRole("heading", { name: "Worker log in" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Admin" })).toHaveAttribute("href", "/login?as=admin");
+    expect(screen.getByRole("link", { name: "Citizen" })).toHaveAttribute("href", "/login");
+    expect(screen.queryByText("Create an account")).not.toBeInTheDocument();
+  });
+
   it("shows client validation errors without calling the API", async () => {
     respond({});
     wrap(<LoginPage />);
