@@ -6,9 +6,10 @@ import { timeAgo, plural } from "@/lib/format";
 import { plate } from "@/lib/ui";
 
 // One job in the worker's list.
-export default function TaskCard({ task: t }) {
+// base: where the card links to. showDepartment: admins see every department.
+export default function TaskCard({ task: t, base = "/worker/tasks", showDepartment = false }) {
   return (
-    <Link href={`/worker/tasks/${t.id}`} className={`${plate} flex min-w-0 gap-3 p-4 transition-shadow hover:shadow-md`}>
+    <Link href={`${base}/${t.id}`} className={`${plate} flex min-w-0 gap-3 p-4 transition-shadow hover:shadow-md`}>
       {t.photoUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={photoSrc(t.photoUrl)} alt="" className="h-16 w-16 shrink-0 rounded-lg object-cover" />
@@ -21,7 +22,7 @@ export default function TaskCard({ task: t }) {
           <StatusPill status={t.status} overdue={t.overdue} />
         </div>
         <p className="mt-0.5 truncate text-sm text-asphalt-soft">
-          {t.category?.name}, reported {timeAgo(t.createdAt)}
+          {t.category?.name}{showDepartment && t.department ? ` in ${t.department.name}` : ""}, reported {timeAgo(t.createdAt)}
         </p>
         <p className="mt-0.5 flex flex-wrap items-center gap-x-3 text-xs text-asphalt-soft">
           <span className="font-semibold text-asphalt">{t.complaintNumber}</span>
@@ -29,6 +30,7 @@ export default function TaskCard({ task: t }) {
             <IconThumb size={13} /> {plural(t.upvoteCount ?? 0, "upvote", "upvotes")}
           </span>
           {t.assignedWorker && <span>Taken by {t.assignedWorker.name}</span>}
+          {typeof t.ageDays === "number" && <span className="font-semibold text-flag">{plural(t.ageDays, "day", "days")} old</span>}
         </p>
       </div>
     </Link>

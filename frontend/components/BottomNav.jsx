@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IconCompass, IconHome, IconList, IconPlus } from "./icons";
+import { IconFlag, IconHome, IconList, IconPin, IconPlus, IconCompass } from "./icons";
 
 export const CITIZEN_TABS = [
   { href: "/citizen", label: "Home", Icon: IconHome, exact: true },
@@ -14,6 +14,13 @@ export const CITIZEN_TABS = [
 export const WORKER_TABS = [
   { href: "/worker", label: "Dashboard", Icon: IconHome, exact: true },
   { href: "/worker/tasks", label: "Tasks", Icon: IconList },
+];
+
+export const ADMIN_TABS = [
+  { href: "/admin", label: "Dashboard", Icon: IconHome, exact: true },
+  { href: "/admin/complaints", label: "Complaints", Icon: IconList },
+  { href: "/admin/map", label: "Map", Icon: IconPin },
+  { href: "/admin/overdue", label: "Overdue", Icon: IconFlag },
 ];
 
 // Phone navigation: stays within thumb reach. Hidden on larger screens (the top bar takes over).
