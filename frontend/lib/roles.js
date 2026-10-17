@@ -31,5 +31,6 @@ export const ROLE_MENU = {
     { href: "/admin/complaints", label: "Complaints" },
     { href: "/admin/map", label: "Map" },
     { href: "/admin/overdue", label: "Overdue" },
+    { href: "/admin/manage/workers", label: "Manage", match: "/admin/manage" },
   ],
 };

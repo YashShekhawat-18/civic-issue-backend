@@ -70,19 +70,22 @@ export default function Navbar() {
 
         {/* desktop menu; on phones citizens get the bottom bar instead */}
         <ul className={`ml-4 items-center gap-1 ${isCitizen ? "hidden md:flex" : "hidden sm:flex"}`}>
-          {menu.map((item) => (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                aria-current={pathname === item.href ? "page" : undefined}
-                className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-sm font-medium ${
-                  pathname === item.href ? "bg-white/15 text-white" : "text-white/75 hover:bg-white/10 hover:text-white"
-                }`}
-              >
-                {item.label}
-              </Link>
-            </li>
-          ))}
+          {menu.map((item) => {
+            const active = item.match ? pathname.startsWith(item.match) : pathname === item.href;
+            return (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  aria-current={active ? "page" : undefined}
+                  className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-sm font-medium ${
+                    active ? "bg-white/15 text-white" : "text-white/75 hover:bg-white/10 hover:text-white"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
 
         <div className="ml-auto flex items-center gap-1.5 text-sm">

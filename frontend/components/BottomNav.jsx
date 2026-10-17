@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IconFlag, IconHome, IconList, IconPin, IconPlus, IconCompass } from "./icons";
+import { IconFlag, IconHome, IconList, IconPin, IconPlus, IconCompass, IconSliders } from "./icons";
 
 export const CITIZEN_TABS = [
   { href: "/citizen", label: "Home", Icon: IconHome, exact: true },
@@ -21,6 +21,7 @@ export const ADMIN_TABS = [
   { href: "/admin/complaints", label: "Complaints", Icon: IconList },
   { href: "/admin/map", label: "Map", Icon: IconPin },
   { href: "/admin/overdue", label: "Overdue", Icon: IconFlag },
+  { href: "/admin/manage/workers", label: "Manage", Icon: IconSliders, match: "/admin/manage" },
 ];
 
 // Phone navigation: stays within thumb reach. Hidden on larger screens (the top bar takes over).
@@ -29,8 +30,8 @@ export default function BottomNav({ tabs = CITIZEN_TABS }) {
   return (
     <nav aria-label="Main" className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-white md:hidden">
       <ul className="mx-auto grid max-w-md" style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}>
-        {tabs.map(({ href, label, Icon, exact, primary }) => {
-          const active = exact ? pathname === href : pathname.startsWith(href);
+        {tabs.map(({ href, label, Icon, exact, primary, match }) => {
+          const active = exact ? pathname === href : pathname.startsWith(match || href);
           return (
             <li key={href}>
               <Link
