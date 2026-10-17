@@ -16,7 +16,11 @@ export function homeFor(role) {
 export const ROLE_MENU = {
   CITIZEN: [
     { href: "/citizen", label: "Home" },
-    { href: "/citizen/report", label: "Report issue" },
+    { href: "/citizen/report", label: "Report an issue" },
+    { href: "/citizen/complaints", label: "My complaints" },
+    { href: "/citizen/nearby", label: "Nearby" },
+    { href: "/citizen/notifications", label: "Alerts" },
+    { href: "/citizen/rewards", label: "Rewards" },
   ],
   WORKER: [{ href: "/worker", label: "My tasks" }],
   ADMIN: [{ href: "/admin", label: "Dashboard" }],

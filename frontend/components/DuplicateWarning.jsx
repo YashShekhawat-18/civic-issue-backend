@@ -4,7 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { photoSrc } from "@/lib/config";
+import { statusInfo } from "@/lib/status";
+import { btnGhost, btnPrimary, btnSecondary } from "@/lib/ui";
 import Alert from "./Alert";
+import StatusPill from "./StatusPill";
 
 /**
  * Shown when the backend answers "a similar complaint already exists nearby" (nothing was created).
@@ -34,44 +37,47 @@ export default function DuplicateWarning({ result, onBack }) {
   const canUpvote = result.canUpvote && !upvoted;
 
   return (
-    <div className="mx-auto max-w-2xl rounded-lg border border-amber-300 bg-amber-50 p-6">
-      <h1 className="text-xl font-bold text-amber-900">This issue may already be reported</h1>
-      <p className="mt-1 text-sm text-amber-900">{result.message}</p>
-
-      <div className="mt-4 flex gap-4 rounded-md border border-amber-200 bg-white p-3">
-        {existing.photoUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={photoSrc(existing.photoUrl)} alt="Existing complaint" className="h-24 w-24 rounded object-cover" />
-        )}
-        <div className="min-w-0 text-sm">
-          <p className="font-semibold">{existing.title}</p>
-          <p className="text-slate-600">
-            {existing.complaintNumber} · {existing.status.replaceAll("_", " ")}
-            {existing.distanceMeters != null && ` · about ${existing.distanceMeters} m away`}
-          </p>
-          <p className="mt-1 text-slate-600" data-testid="upvote-count">
-            {count} {count === 1 ? "person has" : "people have"} upvoted this
-          </p>
-        </div>
+    <div className="mx-auto max-w-2xl overflow-hidden rounded-2xl border border-signal bg-white">
+      <div className="bg-signal px-6 py-4">
+        <h1 className="text-2xl font-extrabold">This issue may already be reported</h1>
+        <p className="mt-1 text-sm font-medium text-asphalt/80">{result.message}</p>
       </div>
 
-      <div className="mt-4 space-y-3">
+      <div className="space-y-4 p-6">
+        <div className="flex gap-4 rounded-xl border border-line p-3">
+          {existing.photoUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={photoSrc(existing.photoUrl)} alt="Existing complaint" className="h-24 w-24 shrink-0 rounded-lg object-cover" />
+          )}
+          <div className="min-w-0 text-sm">
+            <p className="text-base font-bold">{existing.title}</p>
+            <p className="mt-0.5 text-asphalt-soft">
+              {existing.complaintNumber}
+              {existing.distanceMeters != null && `, about ${existing.distanceMeters} m from your pin`}
+            </p>
+            <div className="mt-1.5">
+              <StatusPill status={existing.status} overdue={existing.overdue} />
+              <span className="sr-only">{statusInfo(existing.status).plain}</span>
+            </div>
+            <p className="mt-1.5 text-asphalt-soft" data-testid="upvote-count">
+              {count} {count === 1 ? "person has" : "people have"} upvoted this
+            </p>
+          </div>
+        </div>
+
         <Alert type="error">{error}</Alert>
         {upvoted && !existing.isOwnComplaint && <Alert type="success">Thanks! Your upvote was added.</Alert>}
+
         <div className="flex flex-wrap gap-3">
           {canUpvote && (
-            <button
-              onClick={upvote}
-              disabled={busy}
-              className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-60"
-            >
+            <button onClick={upvote} disabled={busy} className={btnPrimary}>
               {busy ? "Upvoting..." : "Upvote this complaint"}
             </button>
           )}
-          <button onClick={onBack} className="rounded-md border border-slate-300 bg-white px-4 py-2 hover:bg-slate-100">
+          <button onClick={onBack} className={btnSecondary}>
             Back to the form
           </button>
-          <Link href="/citizen" className="rounded-md px-4 py-2 text-blue-700 hover:underline">
+          <Link href="/citizen" className={btnGhost}>
             Done
           </Link>
         </div>

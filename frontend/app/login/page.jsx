@@ -9,6 +9,8 @@ import { validateLogin } from "@/lib/validation";
 import FormField from "@/components/FormField";
 import Alert from "@/components/Alert";
 import GuestOnly from "@/components/GuestOnly";
+import AuthShell from "@/components/AuthShell";
+import { btnPrimary } from "@/lib/ui";
 
 // Only allow same-site relative redirects (blocks open-redirect tricks like ?next=//evil.com).
 function safeNext(next) {
@@ -48,9 +50,9 @@ function LoginForm() {
   }
 
   return (
-    <div className="mx-auto max-w-md rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-      <h1 className="mb-1 text-2xl font-bold">Log in</h1>
-      <p className="mb-5 text-sm text-slate-600">Welcome back. Enter your details to continue.</p>
+    <AuthShell>
+      <h1 className="mb-1 text-3xl font-extrabold">Log in</h1>
+      <p className="mb-6 text-asphalt-soft">Welcome back. Enter your details to continue.</p>
       <form onSubmit={onSubmit} noValidate className="space-y-4">
         {justRegistered && <Alert type="success">Account created. Please log in.</Alert>}
         <Alert type="error">{serverError}</Alert>
@@ -59,18 +61,18 @@ function LoginForm() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full rounded-md bg-blue-600 py-2.5 font-medium text-white hover:bg-blue-700 disabled:opacity-60"
+          className={`${btnPrimary} w-full !py-3 !text-base`}
         >
           {submitting ? "Logging in..." : "Log in"}
         </button>
       </form>
-      <p className="mt-4 text-center text-sm text-slate-600">
+      <p className="mt-5 text-center text-sm text-asphalt-soft">
         New here?{" "}
-        <Link href="/register" className="font-medium text-blue-700 hover:underline">
+        <Link href="/register" className="font-semibold text-sign hover:underline">
           Create an account
         </Link>
       </p>
-    </div>
+    </AuthShell>
   );
 }
 

@@ -7,9 +7,12 @@ import { buildReportFormData, validateReport } from "@/lib/report";
 import { fieldErrorsFromApi } from "@/lib/validation";
 import Alert from "@/components/Alert";
 import Spinner from "@/components/Spinner";
+import RoadTracker from "@/components/RoadTracker";
+import { IconCheck } from "@/components/icons";
 import FormField from "@/components/FormField";
 import LocationPicker from "@/components/LocationPickerLoader";
 import DuplicateWarning from "@/components/DuplicateWarning";
+import { btnPrimary, btnSecondary, btnSignal, plate } from "@/lib/ui";
 
 const EMPTY = { categoryId: "", title: "", description: "", isAnonymous: false };
 
@@ -96,21 +99,27 @@ export default function ReportPage() {
 
   if (created) {
     return (
-      <div className="mx-auto max-w-xl rounded-lg border border-green-200 bg-green-50 p-6 text-center">
-        <h1 className="text-xl font-bold text-green-900">Complaint submitted</h1>
-        <p className="mt-2 text-green-900">
+      <div className={`${plate} mx-auto max-w-xl p-6 text-center`}>
+        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-highway text-white">
+          <IconCheck size={28} />
+        </span>
+        <h1 className="mt-4 text-2xl font-extrabold">Complaint submitted</h1>
+        <p className="mt-2">
           Your complaint number is <strong data-testid="complaint-number">{created.complaintNumber}</strong>.
         </p>
-        <p className="mt-1 text-sm text-green-800">
-          It was sent to the {created.department?.name || "responsible"} department. You will be notified when its status changes.
+        <p className="mx-auto mt-1 max-w-sm text-sm text-asphalt-soft">
+          It was sent to the {created.department?.name || "responsible"} department. We will alert you when its status changes.
         </p>
-        <div className="mt-5 flex justify-center gap-3">
-          <button onClick={reset} className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+        <div className="mx-auto mt-6 max-w-sm px-2">
+          <RoadTracker status={created.status || "SUBMITTED"} compact />
+        </div>
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <Link href={`/citizen/complaints/${created.id}`} className={btnPrimary}>
+            Follow this complaint
+          </Link>
+          <button onClick={reset} className={btnSecondary}>
             Report another issue
           </button>
-          <Link href="/citizen" className="rounded-md border border-slate-300 bg-white px-4 py-2 hover:bg-slate-100">
-            Back to home
-          </Link>
         </div>
       </div>
     );
@@ -124,15 +133,15 @@ export default function ReportPage() {
   if (!categories) return <Spinner />;
 
   return (
-    <div className="mx-auto max-w-2xl rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-      <h1 className="mb-1 text-2xl font-bold">Report an issue</h1>
-      <p className="mb-5 text-sm text-slate-600">Add a photo, describe the problem and mark where it is.</p>
+    <div className={`${plate} mx-auto max-w-2xl p-5 sm:p-7`}>
+      <h1 className="mb-1 text-3xl font-extrabold">Report an issue</h1>
+      <p className="mb-6 text-asphalt-soft">Add a photo, describe the problem and mark where it is.</p>
 
       <form onSubmit={onSubmit} noValidate className="space-y-5">
         <Alert type="error">{serverError}</Alert>
 
         <div>
-          <label htmlFor="categoryId" className="mb-1 block text-sm font-medium text-slate-700">
+          <label htmlFor="categoryId" className="mb-1.5 block text-sm font-semibold">
             Category
           </label>
           <select
@@ -141,7 +150,7 @@ export default function ReportPage() {
             value={form.categoryId}
             onChange={onChange}
             aria-invalid={errors.categoryId ? "true" : "false"}
-            className={`w-full rounded-md border bg-white px-3 py-2 ${errors.categoryId ? "border-red-400" : "border-slate-300"}`}
+            className={`w-full rounded-lg border bg-white px-3.5 py-2.5 ${errors.categoryId ? "border-flag" : "border-line"}`}
           >
             <option value="">Select a category...</option>
             {categories.map((c) => (
@@ -150,13 +159,13 @@ export default function ReportPage() {
               </option>
             ))}
           </select>
-          {errors.categoryId && <p className="mt-1 text-xs text-red-600">{errors.categoryId}</p>}
+          {errors.categoryId && <p className="mt-1.5 text-xs font-medium text-flag">{errors.categoryId}</p>}
         </div>
 
         <FormField id="title" label="Title" value={form.title} onChange={onChange} error={errors.title} maxLength={150} hint="e.g. Large pothole near the bus stop" />
 
         <div>
-          <label htmlFor="description" className="mb-1 block text-sm font-medium text-slate-700">
+          <label htmlFor="description" className="mb-1.5 block text-sm font-semibold">
             Description
           </label>
           <textarea
@@ -167,13 +176,13 @@ export default function ReportPage() {
             onChange={onChange}
             maxLength={2000}
             aria-invalid={errors.description ? "true" : "false"}
-            className={`w-full rounded-md border px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 ${errors.description ? "border-red-400" : "border-slate-300"}`}
+            className={`w-full rounded-lg border bg-white px-3.5 py-2.5 ${errors.description ? "border-flag" : "border-line"}`}
           />
-          {errors.description && <p className="mt-1 text-xs text-red-600">{errors.description}</p>}
+          {errors.description && <p className="mt-1.5 text-xs font-medium text-flag">{errors.description}</p>}
         </div>
 
         <div>
-          <label htmlFor="photo" className="mb-1 block text-sm font-medium text-slate-700">
+          <label htmlFor="photo" className="mb-1.5 block text-sm font-semibold">
             Photo (JPEG, PNG or WebP, up to 5 MB)
           </label>
           <input
@@ -183,17 +192,17 @@ export default function ReportPage() {
             type="file"
             accept="image/jpeg,image/png,image/webp"
             onChange={onPhotoChange}
-            className="block w-full text-sm"
+            className="block w-full rounded-lg border border-dashed border-line bg-concrete/60 p-3 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-asphalt file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-white"
           />
           {preview && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={preview} alt="Selected photo preview" className="mt-2 h-32 rounded-md border border-slate-200 object-cover" />
+            <img src={preview} alt="Selected photo preview" className="mt-3 h-36 rounded-lg border border-line object-cover" />
           )}
-          {errors.photo && <p className="mt-1 text-xs text-red-600">{errors.photo}</p>}
+          {errors.photo && <p className="mt-1.5 text-xs font-medium text-flag">{errors.photo}</p>}
         </div>
 
         <div>
-          <p className="mb-1 text-sm font-medium text-slate-700">Location</p>
+          <p className="mb-1.5 text-sm font-semibold">Location</p>
           <LocationPicker value={location} onChange={setLocation} error={errors.location} />
         </div>
 
@@ -205,7 +214,7 @@ export default function ReportPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full rounded-md bg-blue-600 py-2.5 font-medium text-white hover:bg-blue-700 disabled:opacity-60"
+          className={`${btnSignal} w-full !py-3 !text-base`}
         >
           {submitting ? "Submitting..." : "Submit complaint"}
         </button>

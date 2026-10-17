@@ -7,7 +7,7 @@ export default function Page() {
   return (
     <section>
       <h1 className="text-2xl font-bold">Admin dashboard</h1>
-      <p className="mt-2 text-slate-600">Hello, {user?.name}. Statistics, complaint management and settings will appear here in later phases.</p>
+      <p className="mt-2 text-asphalt-soft">Hello, {user?.name}. Statistics, complaint management and settings will appear here in later phases.</p>
     </section>
   );
 }

@@ -8,7 +8,7 @@ import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-lea
 // A plain CSS pin, so we do not depend on Leaflet's default image files (which break with bundlers).
 const pin = L.divIcon({
   className: "",
-  html: '<div style="width:22px;height:22px;background:#dc2626;border:3px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 1px 4px rgba(0,0,0,.5)"></div>',
+  html: '<div style="width:22px;height:22px;background:#c62f2f;border:3px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 1px 4px rgba(0,0,0,.5)"></div>',
   iconSize: [22, 22],
   iconAnchor: [11, 22],
 });
@@ -69,17 +69,17 @@ export default function LocationPicker({ value, onChange, error }) {
           type="button"
           onClick={useMyLocation}
           disabled={locating}
-          className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm hover:bg-slate-100 disabled:opacity-60"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-3.5 py-2 text-sm font-semibold hover:bg-concrete disabled:opacity-60"
         >
           {locating ? "Detecting..." : "Use my current location"}
         </button>
-        <span className="text-sm text-slate-600" data-testid="coords">
+        <span className="text-sm text-asphalt-soft" data-testid="coords">
           {value ? `Selected: ${value.lat.toFixed(5)}, ${value.lng.toFixed(5)}` : "Or click on the map to drop a pin"}
         </span>
       </div>
       <div
         data-testid="map"
-        className={`h-72 overflow-hidden rounded-md border ${error ? "border-red-400" : "border-slate-300"}`}
+        className={`h-72 overflow-hidden rounded-xl border ${error ? "border-flag" : "border-line"}`}
       >
         <MapContainer
           center={value ? [value.lat, value.lng] : INDIA_CENTER}
@@ -109,7 +109,7 @@ export default function LocationPicker({ value, onChange, error }) {
         </MapContainer>
       </div>
       {geoMessage && <p className="mt-1 text-xs text-amber-700">{geoMessage}</p>}
-      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+      {error && <p className="mt-1.5 text-xs font-medium text-flag">{error}</p>}
     </div>
   );
 }

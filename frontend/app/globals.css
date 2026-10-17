@@ -1,6 +1,45 @@
 @import "tailwindcss";
 
-/* System font stack: no external font download, works offline. */
+/* Design tokens: Indian road-signage palette. Used as bg-asphalt, text-highway, border-line, etc. */
+@theme {
+  --color-asphalt: #1b2430;
+  --color-asphalt-soft: #4a5563;
+  --color-line: #d5dae0;
+  --color-concrete: #edf0f2;
+  --color-highway: #0b6b4d;
+  --color-highway-deep: #084f39;
+  --color-highway-tint: #e1f1ea;
+  --color-signal: #f6b400;
+  --color-signal-tint: #fff3cc;
+  --color-sign: #1d5fd1;
+  --color-sign-tint: #e3edfc;
+  --color-flag: #c62f2f;
+  --color-flag-tint: #fbe6e6;
+  --font-sans: "Public Sans Variable", system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-display: "Bricolage Grotesque Variable", "Public Sans Variable", system-ui, sans-serif;
+}
+
 body {
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--color-concrete);
+  color: var(--color-asphalt);
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+/* Visible keyboard focus everywhere */
+:focus-visible {
+  outline: 3px solid var(--color-sign);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -57,7 +57,19 @@ export function AuthProvider({ children }) {
     await api.post("/auth/register", body, { auth: false });
   }, []);
 
-  const value = useMemo(() => ({ user, loading, login, register, logout }), [user, loading, login, register, logout]);
+  // Re-reads the logged-in user (for example to show new points after an action).
+  const refresh = useCallback(async () => {
+    try {
+      setUser(await api.get("/auth/me"));
+    } catch {
+      /* a 401 is handled globally by the api client */
+    }
+  }, []);
+
+  const value = useMemo(
+    () => ({ user, loading, login, register, logout, refresh }),
+    [user, loading, login, register, logout, refresh]
+  );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

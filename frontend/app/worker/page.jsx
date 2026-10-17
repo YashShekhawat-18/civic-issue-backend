@@ -7,7 +7,7 @@ export default function Page() {
   return (
     <section>
       <h1 className="text-2xl font-bold">Worker home</h1>
-      <p className="mt-2 text-slate-600">Hello, {user?.name}. Your assigned tasks will appear here in a later phase.</p>
+      <p className="mt-2 text-asphalt-soft">Hello, {user?.name}. Your assigned tasks will appear here in a later phase.</p>
     </section>
   );
 }
