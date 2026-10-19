@@ -4,7 +4,9 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { ROLE_MENU, homeFor } from "@/lib/roles";
-import { IconBell, IconLogout, IconStar } from "./icons";
+import { IconBell, IconLogout, IconStar, IconUser } from "./icons";
+import LanguageSwitch from "./LanguageSwitch";
+import { useT } from "@/context/LanguageContext";
 import { useApi } from "@/hooks/useApi";
 import { useEffect, useState } from "react";
 import { NOTIFICATIONS_CHANGED } from "@/lib/events";
@@ -40,6 +42,7 @@ function NotificationBell() {
 }
 
 export default function Navbar() {
+  const t = useT();
   const { user, loading, logout } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
@@ -65,7 +68,7 @@ export default function Navbar() {
           <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-signal font-display text-lg font-extrabold text-asphalt">
             C
           </span>
-          <span className={`hidden whitespace-nowrap font-display text-lg font-bold ${isCitizen ? "xl:inline" : "sm:inline"}`}>Civic Issue Reporter</span>
+          <span className={`hidden whitespace-nowrap font-display text-lg font-bold ${isCitizen ? "xl:inline" : "sm:inline"}`}>{t("Civic Issue Reporter")}</span>
         </Link>
 
         {/* desktop menu; on phones citizens get the bottom bar instead */}
@@ -81,7 +84,7 @@ export default function Navbar() {
                     active ? "bg-white/15 text-white" : "text-white/75 hover:bg-white/10 hover:text-white"
                   }`}
                 >
-                  {item.label}
+                  {t(item.label)}
                 </Link>
               </li>
             );
@@ -89,6 +92,7 @@ export default function Navbar() {
         </ul>
 
         <div className="ml-auto flex items-center gap-1.5 text-sm">
+          <LanguageSwitch />
           {loading ? null : user ? (
             <>
               {isCitizen && (
@@ -105,26 +109,34 @@ export default function Navbar() {
                 </>
               )}
               {!isCitizen && (
-                <span className="hidden text-white/80 sm:inline">
+                <span className="hidden text-white/80 lg:inline">
                   {user.name} <span className="rounded bg-white/15 px-1.5 py-0.5 text-xs">{user.role}</span>
                 </span>
               )}
+              <Link
+                href="/profile"
+                aria-label={t("Profile")}
+                aria-current={pathname === "/profile" ? "page" : undefined}
+                className="rounded-lg p-2 text-white/90 hover:bg-white/10"
+              >
+                <IconUser size={20} />
+              </Link>
               <button
                 onClick={handleLogout}
                 className="flex items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-2 text-white/85 hover:bg-white/10"
-                aria-label="Log out"
+                aria-label={t("Log out")}
               >
                 <IconLogout size={18} />
-                <span className="hidden sm:inline">Log out</span>
+                <span className="hidden sm:inline">{t("Log out")}</span>
               </button>
             </>
           ) : (
             <>
               <Link href="/login" className="rounded-lg px-3 py-1.5 font-medium hover:bg-white/10">
-                Log in
+                {t("Log in")}
               </Link>
               <Link href="/register" className="rounded-lg bg-signal px-3.5 py-1.5 font-semibold text-asphalt hover:brightness-95">
-                Register
+                {t("Register")}
               </Link>
             </>
           )}

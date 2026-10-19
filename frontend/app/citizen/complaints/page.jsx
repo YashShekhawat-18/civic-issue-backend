@@ -11,11 +11,13 @@ import Alert from "@/components/Alert";
 import Spinner from "@/components/Spinner";
 import { btnPrimary, btnSecondary } from "@/lib/ui";
 import Link from "next/link";
+import { useT } from "@/context/LanguageContext";
 
 const PAGE_SIZE = 10;
 
 // Remounted (key=status) each time the filter changes, so it always starts at page 1.
 function ComplaintList({ status }) {
+  const t = useT();
   const first = useApi("/complaints", { status, page: 1, limit: PAGE_SIZE });
   const [extra, setExtra] = useState([]); // items from "Show more"
   const [nextPage, setNextPage] = useState(2);
@@ -44,7 +46,7 @@ function ComplaintList({ status }) {
 
   if (!items.length)
     return status ? (
-      <EmptyState title={`Nothing is "${STATUS_INFO[status].label.toLowerCase()}" right now`} text="Try another filter to see your other complaints." />
+      <EmptyState title={t('Nothing is "{status}" right now', { status: t(STATUS_INFO[status].label).toLowerCase() })} text="Try another filter to see your other complaints." />
     ) : (
       <EmptyState
         title="You have not reported anything yet"
@@ -66,11 +68,11 @@ function ComplaintList({ status }) {
       <div className="mt-5 space-y-3 text-center">
         <Alert type="error">{moreError}</Alert>
         <p className="text-sm text-asphalt-soft">
-          Showing {items.length} of {total}
+          {t("Showing {shown} of {total}", { shown: items.length, total })}
         </p>
         {items.length < total && (
           <button onClick={showMore} disabled={loadingMore} className={btnSecondary}>
-            {loadingMore ? "Loading..." : "Show more"}
+            {loadingMore ? t("Loading...") : t("Show more")}
           </button>
         )}
       </div>
@@ -79,6 +81,7 @@ function ComplaintList({ status }) {
 }
 
 export default function MyComplaintsPage() {
+  const t = useT();
   const [status, setStatus] = useState("");
   const filters = [{ value: "", label: "All" }, ...STATUS_ORDER.map((s) => ({ value: s, label: STATUS_INFO[s].label }))];
 
@@ -86,11 +89,11 @@ export default function MyComplaintsPage() {
     <div>
       <PageHeader title="My complaints">
         <Link href="/citizen/report" className={btnPrimary}>
-          Report an issue
+          {t("Report an issue")}
         </Link>
       </PageHeader>
 
-      <div role="group" aria-label="Filter by progress" className="mb-5 flex flex-wrap gap-2">
+      <div role="group" aria-label={t("Filter by progress")} className="mb-5 flex flex-wrap gap-2">
         {filters.map((f) => (
           <button
             key={f.value}
@@ -102,7 +105,7 @@ export default function MyComplaintsPage() {
                 : "border-line bg-white text-asphalt hover:bg-concrete"
             }`}
           >
-            {f.label}
+            {t(f.label)}
           </button>
         ))}
       </div>

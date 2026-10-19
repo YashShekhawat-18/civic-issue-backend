@@ -4,9 +4,11 @@ import { useState } from "react";
 import { api } from "@/lib/api";
 import { IconThumb } from "./icons";
 import { plural } from "@/lib/format";
+import { useT } from "@/context/LanguageContext";
 
 /** Upvote / remove upvote for someone else's complaint. */
 export default function UpvoteButton({ complaintId, initialCount, initialUpvoted, onChange }) {
+  const t = useT();
   const [count, setCount] = useState(initialCount);
   const [upvoted, setUpvoted] = useState(initialUpvoted);
   const [busy, setBusy] = useState(false);
@@ -43,7 +45,7 @@ export default function UpvoteButton({ complaintId, initialCount, initialUpvoted
         }`}
       >
         <IconThumb size={16} />
-        {upvoted ? "Upvoted" : "Upvote"}
+        {upvoted ? t("Upvoted") : t("Upvote")}
         <span className="font-normal text-asphalt-soft">{plural(count, "person", "people")}</span>
       </button>
       {error && <p className="mt-1 text-xs font-medium text-flag">{error}</p>}

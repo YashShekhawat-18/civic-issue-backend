@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import { useT } from "@/context/LanguageContext";
 
 // A plain CSS pin, so we do not depend on Leaflet's default image files (which break with bundlers).
 const pin = L.divIcon({
@@ -35,13 +36,14 @@ function FlyToValue({ value }) {
 }
 
 export default function LocationPicker({ value, onChange, error }) {
+  const t = useT();
   const [geoMessage, setGeoMessage] = useState("");
   const [locating, setLocating] = useState(false);
 
   function useMyLocation() {
     setGeoMessage("");
     if (!navigator.geolocation) {
-      setGeoMessage("Your browser cannot detect location. Click on the map instead.");
+      setGeoMessage(t("Your browser cannot detect location. Click on the map instead."));
       return;
     }
     setLocating(true);
@@ -54,8 +56,8 @@ export default function LocationPicker({ value, onChange, error }) {
         setLocating(false);
         setGeoMessage(
           err.code === 1
-            ? "Location permission was denied. Click on the map to choose the spot."
-            : "Could not detect your location. Click on the map to choose the spot."
+            ? t("Location permission was denied. Click on the map to choose the spot.")
+            : t("Could not detect your location. Click on the map to choose the spot.")
         );
       },
       { enableHighAccuracy: true, timeout: 10000 }
@@ -71,10 +73,10 @@ export default function LocationPicker({ value, onChange, error }) {
           disabled={locating}
           className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-3.5 py-2 text-sm font-semibold hover:bg-concrete disabled:opacity-60"
         >
-          {locating ? "Detecting..." : "Use my current location"}
+          {locating ? t("Detecting...") : t("Use my current location")}
         </button>
         <span className="text-sm text-asphalt-soft" data-testid="coords">
-          {value ? `Selected: ${value.lat.toFixed(5)}, ${value.lng.toFixed(5)}` : "Or click on the map to drop a pin"}
+          {value ? t("Selected: {lat}, {lng}", { lat: value.lat.toFixed(5), lng: value.lng.toFixed(5) }) : t("Or click on the map to drop a pin")}
         </span>
       </div>
       <div

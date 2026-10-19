@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useT } from "@/context/LanguageContext";
 import { IconFlag, IconHome, IconList, IconPin, IconPlus, IconCompass, IconSliders } from "./icons";
 
 export const CITIZEN_TABS = [
@@ -27,6 +28,7 @@ export const ADMIN_TABS = [
 // Phone navigation: stays within thumb reach. Hidden on larger screens (the top bar takes over).
 export default function BottomNav({ tabs = CITIZEN_TABS }) {
   const pathname = usePathname();
+  const t = useT();
   return (
     <nav aria-label="Main" className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-white md:hidden">
       <ul className="mx-auto grid max-w-md" style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}>
@@ -48,7 +50,7 @@ export default function BottomNav({ tabs = CITIZEN_TABS }) {
                 >
                   <Icon size={20} />
                 </span>
-                {label}
+                {t(label)}
               </Link>
             </li>
           );

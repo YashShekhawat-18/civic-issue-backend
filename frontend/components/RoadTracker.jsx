@@ -1,3 +1,6 @@
+"use client";
+
+import { useT } from "@/context/LanguageContext";
 import { IconCheck, IconFlag, IconWrench } from "./icons";
 import { STATUS_ORDER, statusIndex, statusInfo } from "@/lib/status";
 
@@ -6,6 +9,7 @@ import { STATUS_ORDER, statusIndex, statusInfo } from "@/lib/status";
  * Green = the stretch already travelled. The amber stop is where the complaint is now.
  */
 export default function RoadTracker({ status, compact = false }) {
+  const t = useT();
   const current = statusIndex(status);
   const finished = status === "RESOLVED";
   const nodeSize = compact ? "h-6 w-6" : "h-8 w-8";
@@ -14,7 +18,7 @@ export default function RoadTracker({ status, compact = false }) {
   return (
     <div
       role="img"
-      aria-label={`Progress: ${statusInfo(status).label}. ${statusInfo(status).plain}.`}
+      aria-label={t("Progress: {label}. {plain}.", { label: t(statusInfo(status).label), plain: t(statusInfo(status).plain) })}
       className="relative select-none"
     >
       {/* the road */}
@@ -55,7 +59,7 @@ export default function RoadTracker({ status, compact = false }) {
                   i === current ? "font-bold text-asphalt" : "text-asphalt-soft"
                 }`}
               >
-                {statusInfo(s).label}
+                {t(statusInfo(s).label)}
               </span>
             </li>
           );

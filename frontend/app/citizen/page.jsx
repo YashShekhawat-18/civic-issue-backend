@@ -9,9 +9,11 @@ import EmptyState from "@/components/EmptyState";
 import BadgeStamp from "@/components/BadgeStamp";
 import Alert from "@/components/Alert";
 import { IconCamera, IconStar } from "@/components/icons";
+import { useT } from "@/context/LanguageContext";
 import { btnGhost, plate } from "@/lib/ui";
 
 function PointsCard() {
+  const t = useT();
   const { data, error } = useApi("/gamification/me");
   if (error) return <Alert type="error">{error}</Alert>;
   const next = data?.nextBadge;
@@ -19,11 +21,11 @@ function PointsCard() {
   // How far along the way to the next badge (0 to 100).
   const progress = next ? Math.min(100, Math.round((points / next.pointsRequired) * 100)) : 100;
   return (
-    <section className={`${plate} p-5`} aria-label="Your points">
+    <section className={`${plate} p-5`} aria-label={t("Your points")}>
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold">Your points</h2>
+        <h2 className="text-lg font-bold">{t("Your points")}</h2>
         <Link href="/citizen/rewards" className={`${btnGhost} !px-2 !py-1`}>
-          See rewards
+          {t("See rewards")}
         </Link>
       </div>
       <p className="mt-2 flex items-baseline gap-2">
@@ -40,7 +42,7 @@ function PointsCard() {
           <p className="mt-2 text-sm text-asphalt-soft">
             {next
               ? `${next.pointsNeeded} more ${next.pointsNeeded === 1 ? "point" : "points"} to earn the ${next.name} badge.`
-              : "You have earned every badge. Thank you for keeping your city in shape."}
+              : t("You have earned every badge. Thank you for keeping your city in shape.")}
           </p>
           {data.badges.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-3">
@@ -56,16 +58,17 @@ function PointsCard() {
 }
 
 function LatestComplaints() {
+  const t = useT();
   const { data, error, loading } = useApi("/complaints", { limit: 3 });
   if (error) return <Alert type="error">{error}</Alert>;
   if (loading) return <div className="h-40 animate-pulse rounded-2xl bg-line" />;
   if (!data.items.length)
     return (
       <EmptyState
-        title="You have not reported anything yet"
-        text="Spotted a pothole, a broken light or a garbage pile? Report it and follow it here."
+        title={t("You have not reported anything yet")}
+        text={t("Spotted a pothole, a broken light or a garbage pile? Report it and follow it here.")}
         actionHref="/citizen/report"
-        actionLabel="Report your first issue"
+        actionLabel={t("Report your first issue")}
       />
     );
   return (
@@ -81,6 +84,7 @@ function LatestComplaints() {
 
 export default function CitizenHome() {
   const { user, refresh } = useAuth();
+  const t = useT();
   useEffect(() => {
     refresh(); // keeps the points in the top bar up to date
   }, [refresh]);
@@ -88,13 +92,13 @@ export default function CitizenHome() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-extrabold">Hello, {firstName}</h1>
+      <h1 className="text-3xl font-extrabold">{t("Hello, {name}", { name: firstName })}</h1>
 
       <section className="rounded-2xl bg-signal p-6 md:flex md:items-center md:justify-between md:gap-6 md:p-8">
         <div>
-          <h2 className="text-2xl font-extrabold md:text-3xl">See something broken?</h2>
+          <h2 className="text-2xl font-extrabold md:text-3xl">{t("See something broken?")}</h2>
           <p className="mt-1.5 max-w-md text-asphalt/80">
-            Take a photo and mark the spot on the map. It goes straight to the right department.
+            {t("Take a photo and mark the spot on the map. It goes straight to the right department.")}
           </p>
         </div>
         <Link
@@ -102,16 +106,16 @@ export default function CitizenHome() {
           className="mt-5 inline-flex items-center gap-2 rounded-lg bg-asphalt px-5 py-3 font-semibold text-white hover:bg-black md:mt-0 md:shrink-0"
         >
           <IconCamera size={20} />
-          Report an issue
+          {t("Report an issue")}
         </Link>
       </section>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-5">
-        <section className="min-w-0 md:col-span-3" aria-label="Your latest complaints">
+        <section className="min-w-0 md:col-span-3" aria-label={t("Your latest complaints")}>
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-xl font-bold">Your latest complaints</h2>
+            <h2 className="text-xl font-bold">{t("Your latest complaints")}</h2>
             <Link href="/citizen/complaints" className={`${btnGhost} !px-2 !py-1`}>
-              See all
+              {t("See all")}
             </Link>
           </div>
           <LatestComplaints />

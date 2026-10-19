@@ -13,11 +13,13 @@ import { IconCheck } from "@/components/icons";
 import FormField from "@/components/FormField";
 import LocationPicker from "@/components/LocationPickerLoader";
 import DuplicateWarning from "@/components/DuplicateWarning";
+import { useT } from "@/context/LanguageContext";
 import { btnPrimary, btnSecondary, btnSignal, plate } from "@/lib/ui";
 
 const EMPTY = { categoryId: "", title: "", description: "", isAnonymous: false };
 
 export default function ReportPage() {
+  const t = useT();
   const [categories, setCategories] = useState(null);
   const [loadError, setLoadError] = useState("");
   const [form, setForm] = useState(EMPTY);
@@ -121,22 +123,22 @@ export default function ReportPage() {
         <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-highway text-white">
           <IconCheck size={28} />
         </span>
-        <h1 className="mt-4 text-2xl font-extrabold">Complaint submitted</h1>
+        <h1 className="mt-4 text-2xl font-extrabold">{t("Complaint submitted")}</h1>
         <p className="mt-2">
-          Your complaint number is <strong data-testid="complaint-number">{created.complaintNumber}</strong>.
+          {t("Your complaint number is")} <strong data-testid="complaint-number">{created.complaintNumber}</strong>.
         </p>
         <p className="mx-auto mt-1 max-w-sm text-sm text-asphalt-soft">
-          It was sent to the {created.department?.name || "responsible"} department. We will alert you when its status changes.
+          {t("It was sent to the {department} department. We will alert you when its status changes.", { department: created.department?.name || t("responsible") })}
         </p>
         <div className="mx-auto mt-6 max-w-sm px-2">
           <RoadTracker status={created.status || "SUBMITTED"} compact />
         </div>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link href={`/citizen/complaints/${created.id}`} className={btnPrimary}>
-            Follow this complaint
+            {t("Follow this complaint")}
           </Link>
           <button onClick={reset} className={btnSecondary}>
-            Report another issue
+            {t("Report another issue")}
           </button>
         </div>
       </div>
@@ -152,15 +154,15 @@ export default function ReportPage() {
 
   return (
     <div className={`${plate} mx-auto max-w-2xl p-5 sm:p-7`}>
-      <h1 className="mb-1 text-3xl font-extrabold">Report an issue</h1>
-      <p className="mb-6 text-asphalt-soft">Add a photo, describe the problem and mark where it is.</p>
+      <h1 className="mb-1 text-3xl font-extrabold">{t("Report an issue")}</h1>
+      <p className="mb-6 text-asphalt-soft">{t("Add a photo, describe the problem and mark where it is.")}</p>
 
       <form onSubmit={onSubmit} noValidate className="space-y-5">
         <Alert type="error">{serverError}</Alert>
 
         <div>
           <label htmlFor="categoryId" className="mb-1.5 block text-sm font-semibold">
-            Category
+            {t("Category")}
           </label>
           <select
             id="categoryId"
@@ -170,21 +172,21 @@ export default function ReportPage() {
             aria-invalid={errors.categoryId ? "true" : "false"}
             className={`w-full rounded-lg border bg-white px-3.5 py-2.5 ${errors.categoryId ? "border-flag" : "border-line"}`}
           >
-            <option value="">Select a category...</option>
+            <option value="">{t("Select a category...")}</option>
             {categories.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
               </option>
             ))}
           </select>
-          {errors.categoryId && <p className="mt-1.5 text-xs font-medium text-flag">{errors.categoryId}</p>}
+          {errors.categoryId && <p className="mt-1.5 text-xs font-medium text-flag">{t(errors.categoryId)}</p>}
         </div>
 
-        <FormField id="title" label="Title" value={form.title} onChange={onChange} error={errors.title} maxLength={150} hint="e.g. Large pothole near the bus stop" />
+        <FormField id="title" label={t("Title")} value={form.title} onChange={onChange} error={errors.title} maxLength={150} hint="e.g. Large pothole near the bus stop" />
 
         <div>
           <label htmlFor="description" className="mb-1.5 block text-sm font-semibold">
-            Description
+            {t("Description")}
           </label>
           <textarea
             id="description"
@@ -196,12 +198,12 @@ export default function ReportPage() {
             aria-invalid={errors.description ? "true" : "false"}
             className={`w-full rounded-lg border bg-white px-3.5 py-2.5 ${errors.description ? "border-flag" : "border-line"}`}
           />
-          {errors.description && <p className="mt-1.5 text-xs font-medium text-flag">{errors.description}</p>}
+          {errors.description && <p className="mt-1.5 text-xs font-medium text-flag">{t(errors.description)}</p>}
         </div>
 
         <div>
           <label htmlFor="photo" className="mb-1.5 block text-sm font-semibold">
-            Photo taken at the spot (JPEG with location, up to 5 MB)
+            {t("Photo taken at the spot (JPEG with location, up to 5 MB)")}
           </label>
           <input
             ref={fileInput}
@@ -214,28 +216,28 @@ export default function ReportPage() {
           />
           {preview && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={preview} alt="Selected photo preview" className="mt-3 h-36 rounded-lg border border-line object-cover" />
+            <img src={preview} alt={t("Selected photo preview")} className="mt-3 h-36 rounded-lg border border-line object-cover" />
           )}
           {photoFound && (
             <p className="mt-1.5 text-xs font-medium text-highway-deep" data-testid="photo-gps-ok">
-              Location found in the photo. The pin was set for you.
+              {t("Location found in the photo. The pin was set for you.")}
             </p>
           )}
           {(errors.photo || photoProblem) && (
             <p className="mt-1.5 text-xs font-medium text-flag" data-testid="photo-problem">
-              {errors.photo || photoProblem}
+              {t(errors.photo || photoProblem)}
             </p>
           )}
         </div>
 
         <div>
-          <p className="mb-1.5 text-sm font-semibold">Location</p>
-          <LocationPicker value={location} onChange={setLocation} error={errors.location} />
+          <p className="mb-1.5 text-sm font-semibold">{t("Location")}</p>
+          <LocationPicker value={location} onChange={setLocation} error={errors.location && t(errors.location)} />
         </div>
 
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" name="isAnonymous" checked={form.isAnonymous} onChange={onChange} />
-          Hide my name from other citizens
+          {t("Hide my name from other citizens")}
         </label>
 
         <button
@@ -243,7 +245,7 @@ export default function ReportPage() {
           disabled={submitting}
           className={`${btnSignal} w-full !py-3 !text-base`}
         >
-          {submitting ? "Submitting..." : "Submit complaint"}
+          {submitting ? t("Submitting...") : t("Submit complaint")}
         </button>
       </form>
     </div>

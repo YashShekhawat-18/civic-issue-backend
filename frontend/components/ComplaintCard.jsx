@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useT } from "@/context/LanguageContext";
 import RoadTracker from "./RoadTracker";
 import StatusPill from "./StatusPill";
 import { IconThumb } from "./icons";
@@ -7,6 +10,7 @@ import { formatDate, plural } from "@/lib/format";
 import { plate } from "@/lib/ui";
 
 export default function ComplaintCard({ complaint: c }) {
+  const t = useT();
   return (
     <Link
       href={`/citizen/complaints/${c.id}`}
@@ -25,7 +29,7 @@ export default function ComplaintCard({ complaint: c }) {
             <StatusPill status={c.status} overdue={c.overdue} />
           </div>
           <p className="mt-0.5 truncate text-sm text-asphalt-soft">
-            {c.category?.name} on {formatDate(c.createdAt)}
+            {t("{category} on {date}", { category: c.category?.name, date: formatDate(c.createdAt) })}
           </p>
           <p className="mt-0.5 flex items-center gap-1.5 text-xs text-asphalt-soft">
             <span className="font-semibold text-asphalt">{c.complaintNumber}</span>

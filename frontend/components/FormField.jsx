@@ -1,4 +1,9 @@
+"use client";
+
+import { useT } from "@/context/LanguageContext";
+
 export default function FormField({ id, label, error, hint, ...inputProps }) {
+  const t = useT();
   return (
     <div>
       <label htmlFor={id} className="mb-1.5 block text-sm font-semibold text-asphalt">
@@ -14,10 +19,10 @@ export default function FormField({ id, label, error, hint, ...inputProps }) {
         }`}
         {...inputProps}
       />
-      {hint && !error && <p className="mt-1.5 text-xs text-asphalt-soft">{hint}</p>}
+      {hint && !error && <p className="mt-1.5 text-xs text-asphalt-soft">{t(hint)}</p>}
       {error && (
         <p id={`${id}-error`} className="mt-1.5 text-xs font-medium text-flag">
-          {error}
+          {t(error)}
         </p>
       )}
     </div>

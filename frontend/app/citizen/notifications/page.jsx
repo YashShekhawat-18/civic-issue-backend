@@ -11,6 +11,7 @@ import Spinner from "@/components/Spinner";
 import { IconAward, IconBell, IconFlag, IconWrench } from "@/components/icons";
 import { timeAgo } from "@/lib/format";
 import { announceNotificationsChanged } from "@/lib/events";
+import { useT } from "@/context/LanguageContext";
 import { btnSecondary } from "@/lib/ui";
 
 const KINDS = {
@@ -20,6 +21,7 @@ const KINDS = {
 };
 
 export default function NotificationsPage() {
+  const t = useT();
   const { data, error, loading, reload } = useApi("/notifications", { limit: 50 });
   const [actionError, setActionError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -57,7 +59,7 @@ export default function NotificationsPage() {
       <PageHeader title="Alerts">
         {data.unreadCount > 0 && (
           <button onClick={markAllRead} disabled={busy} className={btnSecondary}>
-            Mark all as read
+            {t("Mark all as read")}
           </button>
         )}
       </PageHeader>
@@ -79,7 +81,7 @@ export default function NotificationsPage() {
                   <p className="mt-0.5 text-sm text-asphalt-soft">{n.message}</p>
                   <p className="mt-1 text-xs text-asphalt-soft">{timeAgo(n.createdAt)}</p>
                 </div>
-                {!n.isRead && <span aria-label="Unread" className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-sign" />}
+                {!n.isRead && <span aria-label={t("Unread")} className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-sign" />}
               </div>
             );
             return (

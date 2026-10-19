@@ -12,9 +12,11 @@ import { photoSrc } from "@/lib/config";
 import { formatDateTime, plural } from "@/lib/format";
 import { statusInfo } from "@/lib/status";
 import { btnGhost, plate } from "@/lib/ui";
+import { useT } from "@/context/LanguageContext";
 import { IconThumb } from "@/components/icons";
 
 export default function ComplaintDetailPage() {
+  const t = useT();
   const { id } = useParams();
   const { data: c, error, loading } = useApi(`/complaints/${id}`);
 
@@ -22,9 +24,9 @@ export default function ComplaintDetailPage() {
   if (error)
     return (
       <div className="space-y-4">
-        <Alert type="error">{error === "Complaint not found" ? "We could not find this complaint. It may belong to someone else." : error}</Alert>
+        <Alert type="error">{error === "Complaint not found" ? t("We could not find this complaint. It may belong to someone else.") : error}</Alert>
         <Link href="/citizen/complaints" className={btnGhost}>
-          Back to my complaints
+          {t("Back to my complaints")}
         </Link>
       </div>
     );
@@ -35,7 +37,7 @@ export default function ComplaintDetailPage() {
   return (
     <article className="space-y-5">
       <Link href="/citizen/complaints" className={`${btnGhost} -ml-3`}>
-        Back to my complaints
+        {t("Back to my complaints")}
       </Link>
 
       <header>
@@ -46,15 +48,15 @@ export default function ComplaintDetailPage() {
         </div>
       </header>
 
-      <section className={`${plate} p-5 pt-6`} aria-label="Progress">
+      <section className={`${plate} p-5 pt-6`} aria-label={t("Progress")}>
         <RoadTracker status={c.status} />
         <p className="mt-4 text-center text-sm text-asphalt-soft">
-          {info.plain}.
-          {c.status === "RESOLVED" && c.resolvedAt ? ` Fixed on ${formatDateTime(c.resolvedAt)}.` : ""}
+          {t(info.plain)}.
+          {c.status === "RESOLVED" && c.resolvedAt ? ` ${t("Fixed on {date}.", { date: formatDateTime(c.resolvedAt) })}` : ""}
         </p>
         {c.overdue && c.status !== "RESOLVED" && (
           <p className="mt-2 text-center text-sm font-semibold text-flag">
-            This is taking longer than expected. The department has been alerted.
+            {t("This is taking longer than expected. The department has been alerted.")}
           </p>
         )}
       </section>
@@ -62,43 +64,43 @@ export default function ComplaintDetailPage() {
       <div className="grid gap-5 md:grid-cols-2">
         {c.photoUrl && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={photoSrc(c.photoUrl)} alt={`Photo of: ${c.title}`} className="h-72 w-full rounded-2xl border border-line object-cover" />
+          <img src={photoSrc(c.photoUrl)} alt={t("Photo of: {title}", { title: c.title })} className="h-72 w-full rounded-2xl border border-line object-cover" />
         )}
-        <MapView center={{ lat, lng }} zoom={16} markers={[{ id: c.id, lat, lng, status: c.status }]} label="Where the issue is" height={288} />
+        <MapView center={{ lat, lng }} zoom={16} markers={[{ id: c.id, lat, lng, status: c.status }]} label={t("Where the issue is")} height={288} />
       </div>
 
       {c.resolutionPhotoUrl && (
         <figure>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={photoSrc(c.resolutionPhotoUrl)} alt="Photo of the finished work" className="h-72 w-full rounded-2xl border border-line object-cover md:w-1/2" />
-          <figcaption className="mt-1.5 text-xs font-medium text-asphalt-soft">Photo of the finished work, taken at the spot</figcaption>
+          <img src={photoSrc(c.resolutionPhotoUrl)} alt={t("Photo of the finished work")} className="h-72 w-full rounded-2xl border border-line object-cover md:w-1/2" />
+          <figcaption className="mt-1.5 text-xs font-medium text-asphalt-soft">{t("Photo of the finished work, taken at the spot")}</figcaption>
         </figure>
       )}
 
       <section className={`${plate} p-5`}>
-        <h2 className="text-lg font-bold">What you reported</h2>
+        <h2 className="text-lg font-bold">{t("What you reported")}</h2>
         <p className="mt-2 whitespace-pre-line text-asphalt/90">{c.description}</p>
         <dl className="mt-5 grid gap-4 text-sm sm:grid-cols-2">
           <div>
-            <dt className="font-semibold text-asphalt-soft">Category</dt>
+            <dt className="font-semibold text-asphalt-soft">{t("Category")}</dt>
             <dd className="mt-0.5 font-medium">{c.category?.name}</dd>
           </div>
           <div>
-            <dt className="font-semibold text-asphalt-soft">Handled by</dt>
+            <dt className="font-semibold text-asphalt-soft">{t("Handled by")}</dt>
             <dd className="mt-0.5 font-medium">{c.department?.name}</dd>
           </div>
           <div>
-            <dt className="font-semibold text-asphalt-soft">Reported on</dt>
+            <dt className="font-semibold text-asphalt-soft">{t("Reported on")}</dt>
             <dd className="mt-0.5 font-medium">{formatDateTime(c.createdAt)}</dd>
           </div>
           <div>
-            <dt className="font-semibold text-asphalt-soft">Support from neighbours</dt>
+            <dt className="font-semibold text-asphalt-soft">{t("Support from neighbours")}</dt>
             <dd className="mt-0.5 flex items-center gap-1.5 font-medium">
               <IconThumb size={15} /> {plural(c.upvoteCount ?? 0, "upvote", "upvotes")}
             </dd>
           </div>
         </dl>
-        {c.isAnonymous && <p className="mt-4 text-xs text-asphalt-soft">Your name is hidden from other citizens on this complaint.</p>}
+        {c.isAnonymous && <p className="mt-4 text-xs text-asphalt-soft">{t("Your name is hidden from other citizens on this complaint.")}</p>}
       </section>
     </article>
   );

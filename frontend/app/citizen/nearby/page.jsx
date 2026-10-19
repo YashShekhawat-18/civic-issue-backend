@@ -11,12 +11,14 @@ import Alert from "@/components/Alert";
 import { photoSrc } from "@/lib/config";
 import { plural } from "@/lib/format";
 import { btnPrimary, plate } from "@/lib/ui";
+import { useT } from "@/context/LanguageContext";
 import { IconPin } from "@/components/icons";
 
 const INDIA = { lat: 20.5937, lng: 78.9629 };
 const RADII = [250, 500, 1000, 2000];
 
 export default function NearbyPage() {
+  const t = useT();
   const [center, setCenter] = useState(null);
   const [radius, setRadius] = useState(500);
   const [categoryId, setCategoryId] = useState("");
@@ -32,7 +34,7 @@ export default function NearbyPage() {
   function useMyLocation() {
     setGeoMessage("");
     if (!navigator.geolocation) {
-      setGeoMessage("Your browser cannot detect location. Click on the map instead.");
+      setGeoMessage(t("Your browser cannot detect location. Click on the map instead."));
       return;
     }
     setLocating(true);
@@ -45,8 +47,8 @@ export default function NearbyPage() {
         setLocating(false);
         setGeoMessage(
           err.code === 1
-            ? "Location permission was denied. Click on the map to choose where to look."
-            : "Could not detect your location. Click on the map to choose where to look."
+            ? t("Location permission was denied. Click on the map to choose where to look.")
+            : t("Could not detect your location. Click on the map to choose where to look.")
         );
       },
       { enableHighAccuracy: true, timeout: 10000 }
@@ -66,17 +68,17 @@ export default function NearbyPage() {
     <div>
       <PageHeader title="Issues near you" />
       <p className="-mt-3 mb-5 max-w-xl text-asphalt-soft">
-        See what neighbours have already reported. If your problem is on the list, upvote it instead of reporting it again.
+        {t("See what neighbours have already reported. If your problem is on the list, upvote it instead of reporting it again.")}
       </p>
 
       <div className="mb-4 flex flex-wrap items-end gap-3">
         <button type="button" onClick={useMyLocation} disabled={locating} className={btnPrimary}>
           <IconPin size={18} />
-          {locating ? "Detecting..." : "Use my location"}
+          {locating ? t("Detecting...") : t("Use my location")}
         </button>
         <div>
           <label htmlFor="radius" className="mb-1 block text-xs font-semibold text-asphalt-soft">
-            Distance
+            {t("Distance")}
           </label>
           <select id="radius" value={radius} onChange={(e) => setRadius(Number(e.target.value))} className="rounded-lg border border-line bg-white px-3 py-2.5 text-sm">
             {RADII.map((r) => (
@@ -88,10 +90,10 @@ export default function NearbyPage() {
         </div>
         <div>
           <label htmlFor="category" className="mb-1 block text-xs font-semibold text-asphalt-soft">
-            Category
+            {t("Category")}
           </label>
           <select id="category" value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="rounded-lg border border-line bg-white px-3 py-2.5 text-sm">
-            <option value="">All categories</option>
+            <option value="">{t("All categories")}</option>
             {(categories || []).map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
@@ -109,11 +111,11 @@ export default function NearbyPage() {
         markers={markers}
         onPick={setCenter}
         showCenter={!!center}
-        label="Map of nearby issues. Click to choose where to look."
+        label={t("Map of nearby issues. Click to choose where to look.")}
         height={320}
       />
       <p className="mb-6 mt-2 text-sm text-asphalt-soft" data-testid="nearby-hint">
-        {center ? "Click the map to look somewhere else." : "Use your location, or click the map to choose where to look."}
+        {center ? t("Click the map to look somewhere else.") : t("Use your location, or click the map to choose where to look.")}
       </p>
 
       {error && <Alert type="error">{error}</Alert>}
@@ -122,8 +124,8 @@ export default function NearbyPage() {
         <EmptyState title="Nothing reported here yet" text="No open complaints in this area. If you see a problem, you can be the first to report it." actionHref="/citizen/report" actionLabel="Report an issue" />
       )}
       {items.length > 0 && (
-        <section aria-label="Complaints near this spot">
-          <h2 className="mb-3 text-xl font-bold">{plural(items.length, "complaint", "complaints")} nearby</h2>
+        <section aria-label={t("Complaints near this spot")}>
+          <h2 className="mb-3 text-xl font-bold">{t("{count} nearby", { count: plural(items.length, "complaint", "complaints") })}</h2>
           <ul className="space-y-3">
             {items.map((c) => (
               <li key={c.id} className={`${plate} flex gap-3 p-4`}>
@@ -137,12 +139,12 @@ export default function NearbyPage() {
                     <StatusPill status={c.status} overdue={c.overdue} />
                   </div>
                   <p className="mt-0.5 text-sm text-asphalt-soft">
-                    {c.category?.name}, {c.distanceMeters} m away
-                    {c.reporter?.name ? `, reported by ${c.reporter.name}` : ""}
+                    {c.category?.name}, {t("{n} m away", { n: c.distanceMeters })}
+                    {c.reporter?.name ? `, ${t("reported by {name}", { name: c.reporter.name })}` : ""}
                   </p>
                   <div className="mt-3">
                     {c.isOwnComplaint ? (
-                      <span className="rounded-full bg-sign-tint px-3 py-1 text-xs font-bold text-sign">Your complaint</span>
+                      <span className="rounded-full bg-sign-tint px-3 py-1 text-xs font-bold text-sign">{t("Your complaint")}</span>
                     ) : (
                       <UpvoteButton complaintId={c.id} initialCount={c.upvoteCount} initialUpvoted={c.hasUpvoted} />
                     )}

@@ -1,0 +1,289 @@
+// Hindi translations. The English text itself is the key, so a missing translation
+// simply shows English (nothing ever breaks). Placeholders look like {n}.
+export const LANGUAGES = [
+  { code: "en", label: "English", short: "EN" },
+  { code: "hi", label: "हिन्दी", short: "हि" },
+];
+
+export const HI = {
+  // navigation
+  "Home": "होम",
+  "Report an issue": "समस्या दर्ज करें",
+  "Report": "दर्ज करें",
+  "My complaints": "मेरी शिकायतें",
+  "Nearby": "आस-पास",
+  "Alerts": "सूचनाएँ",
+  "Rewards": "पुरस्कार",
+  "Dashboard": "डैशबोर्ड",
+  "Tasks": "कार्य",
+  "Complaints": "शिकायतें",
+  "Map": "नक्शा",
+  "Overdue": "विलंबित",
+  "Manage": "प्रबंधन",
+  "Profile": "प्रोफ़ाइल",
+  "Log in": "लॉग इन",
+  "Log out": "लॉग आउट",
+  "Register": "रजिस्टर करें",
+  "Civic Issue Reporter": "नागरिक समस्या रिपोर्टर",
+  "Language": "भाषा",
+  // status
+  "Reported": "दर्ज की गई",
+  "Being fixed": "ठीक हो रही है",
+  "Resolved": "हल हो गई",
+  "Sent to the department": "विभाग को भेजी गई",
+  "A worker is on it": "कर्मचारी काम कर रहा है",
+  "The issue is fixed": "समस्या ठीक हो गई",
+  "Progress: {label}. {plain}.": "प्रगति: {label}। {plain}।",
+  // landing
+  "Report it. Watch it get fixed.": "शिकायत करें। ठीक होते देखें।",
+  "Potholes, garbage, broken streetlights, water leaks. Send them to the right department with a photo and a pin, then follow every step until the work is done.":
+    "गड्ढे, कचरा, खराब स्ट्रीटलाइट, पानी का रिसाव। फ़ोटो और नक्शे पर निशान के साथ सही विभाग को भेजें, और काम पूरा होने तक हर कदम देखें।",
+  "Create an account": "खाता बनाएँ",
+  "City staff?": "शहर के कर्मचारी?",
+  "Worker log in": "कर्मचारी लॉग इन",
+  "Admin log in": "एडमिन लॉग इन",
+  "Large pothole near the bus stop": "बस स्टॉप के पास बड़ा गड्ढा",
+  "Roads department, reported 2 days ago": "सड़क विभाग, 2 दिन पहले दर्ज",
+  "A worker is on it.": "कर्मचारी काम कर रहा है।",
+  // auth
+  "Citizen": "नागरिक",
+  "Worker": "कर्मचारी",
+  "Admin": "एडमिन",
+  "Welcome back. Enter your details to continue.": "वापसी पर स्वागत है। जारी रखने के लिए विवरण भरें।",
+  "Use the email and password your admin gave you.": "एडमिन द्वारा दिया गया ईमेल और पासवर्ड इस्तेमाल करें।",
+  "Worker accounts are created by an admin.": "कर्मचारी खाते एडमिन बनाते हैं।",
+  "Use your administrator email and password.": "अपना एडमिन ईमेल और पासवर्ड इस्तेमाल करें।",
+  "Admin accounts are set up by the system owner.": "एडमिन खाते सिस्टम के मालिक बनाते हैं।",
+  "Account created. Please log in.": "खाता बन गया। कृपया लॉग इन करें।",
+  "Email": "ईमेल",
+  "Password": "पासवर्ड",
+  "Logging in...": "लॉग इन हो रहा है...",
+  "New here?": "नए हैं?",
+  "Create your account": "अपना खाता बनाएँ",
+  "Free for citizens. Staff accounts are created by an admin.": "नागरिकों के लिए मुफ़्त। कर्मचारी खाते एडमिन बनाते हैं।",
+  "Full name": "पूरा नाम",
+  "Phone (optional)": "फ़ोन (वैकल्पिक)",
+  "10-15 digits, e.g. +919876543210": "10-15 अंक, जैसे +919876543210",
+  "At least 8 characters with a letter and a number": "कम से कम 8 अक्षर, जिसमें एक अक्षर और एक अंक हो",
+  "Confirm password": "पासवर्ड दोबारा लिखें",
+  "Creating account...": "खाता बन रहा है...",
+  "Already registered?": "पहले से रजिस्टर हैं?",
+  // citizen home
+  "Hello, {name}": "नमस्ते, {name}",
+  "See something broken?": "कुछ टूटा-फूटा दिखा?",
+  "Take a photo and mark the spot on the map. It goes straight to the right department.":
+    "फ़ोटो लें और नक्शे पर जगह चुनें। शिकायत सीधे सही विभाग को जाती है।",
+  "Your latest complaints": "आपकी हाल की शिकायतें",
+  "See all": "सभी देखें",
+  "Your points": "आपके अंक",
+  "See rewards": "पुरस्कार देखें",
+  "You have not reported anything yet": "आपने अभी तक कुछ दर्ज नहीं किया",
+  "Spotted a pothole, a broken light or a garbage pile? Report it and follow it here.":
+    "गड्ढा, खराब लाइट या कचरे का ढेर दिखा? दर्ज करें और यहीं देखें।",
+  "Report your first issue": "अपनी पहली समस्या दर्ज करें",
+  "You have earned every badge. Thank you for keeping your city in shape.": "आपने सभी बैज जीत लिए। शहर को बेहतर रखने के लिए धन्यवाद।",
+  // report
+  "Add a photo, describe the problem and mark where it is.": "फ़ोटो जोड़ें, समस्या बताएँ और जगह चुनें।",
+  "Category": "श्रेणी",
+  "Select a category...": "श्रेणी चुनें...",
+  "Title": "शीर्षक",
+  "e.g. Large pothole near the bus stop": "जैसे बस स्टॉप के पास बड़ा गड्ढा",
+  "Description": "विवरण",
+  "Photo taken at the spot (JPEG with location, up to 5 MB)": "मौके पर ली गई फ़ोटो (लोकेशन वाली JPEG, 5 MB तक)",
+  "Location found in the photo. The pin was set for you.": "फ़ोटो में लोकेशन मिली। निशान अपने-आप लग गया।",
+  "Location": "स्थान",
+  "Hide my name from other citizens": "मेरा नाम दूसरे नागरिकों से छुपाएँ",
+  "Submit complaint": "शिकायत जमा करें",
+  "Submitting...": "जमा हो रहा है...",
+  "Complaint submitted": "शिकायत जमा हो गई",
+  "Follow this complaint": "इस शिकायत को देखें",
+  "Report another issue": "एक और समस्या दर्ज करें",
+  // profile
+  "My profile": "मेरी प्रोफ़ाइल",
+  "Your details": "आपका विवरण",
+  "Name": "नाम",
+  "Phone": "फ़ोन",
+  "Role": "भूमिका",
+  "Save changes": "बदलाव सहेजें",
+  "Saving...": "सहेज रहे हैं...",
+  "Profile updated": "प्रोफ़ाइल अपडेट हो गई",
+  "Change password": "पासवर्ड बदलें",
+  "Current password": "मौजूदा पासवर्ड",
+  "New password": "नया पासवर्ड",
+  "Confirm new password": "नया पासवर्ड दोबारा लिखें",
+  "Changing...": "बदल रहे हैं...",
+  "Password changed": "पासवर्ड बदल गया",
+  "Choose the language of the website.": "वेबसाइट की भाषा चुनें।",
+  // shared
+  "Pages": "पृष्ठ",
+  "Previous": "पिछला",
+  "Next": "अगला",
+  "Page {page} of {pages} ({total} in all)": "पृष्ठ {page} / {pages} (कुल {total})",
+  "Earned": "मिला",
+  "{n} points": "{n} अंक",
+  "{n} point": "{n} अंक",
+  "{n} upvote": "{n} अपवोट",
+  "{n} upvotes": "{n} अपवोट",
+  "{n} person": "{n} व्यक्ति",
+  "{n} people": "{n} लोग",
+  "{n} complaint": "{n} शिकायत",
+  "{n} complaints": "{n} शिकायतें",
+  "{n} day": "{n} दिन",
+  "{n} days": "{n} दिन",
+  "just now": "अभी-अभी",
+  "{n} minute ago": "{n} मिनट पहले",
+  "{n} minutes ago": "{n} मिनट पहले",
+  "{n} hour ago": "{n} घंटा पहले",
+  "{n} hours ago": "{n} घंटे पहले",
+  "{n} day ago": "{n} दिन पहले",
+  "{n} days ago": "{n} दिन पहले",
+  "{category} on {date}": "{category}, {date} को",
+  "Upvote": "अपवोट",
+  "Upvoted": "अपवोट किया",
+  "Loading...": "लोड हो रहा है...",
+  "Detecting...": "पता लगा रहे हैं...",
+  "Your browser cannot detect location. Click on the map instead.": "आपका ब्राउज़र स्थान नहीं पहचान सकता। इसके बजाय नक्शे पर क्लिक करें।",
+  "Location permission was denied. Click on the map to choose the spot.": "स्थान की अनुमति नहीं मिली। जगह चुनने के लिए नक्शे पर क्लिक करें।",
+  "Could not detect your location. Click on the map to choose the spot.": "आपका स्थान नहीं मिल सका। जगह चुनने के लिए नक्शे पर क्लिक करें।",
+  "Location permission was denied. Click on the map to choose where to look.": "स्थान की अनुमति नहीं मिली। देखने की जगह चुनने के लिए नक्शे पर क्लिक करें।",
+  "Could not detect your location. Click on the map to choose where to look.": "आपका स्थान नहीं मिल सका। देखने की जगह चुनने के लिए नक्शे पर क्लिक करें।",
+  "Use my current location": "मेरा मौजूदा स्थान इस्तेमाल करें",
+  "Selected: {lat}, {lng}": "चुना गया: {lat}, {lng}",
+  "Or click on the map to drop a pin": "या नक्शे पर क्लिक करके निशान लगाएँ",
+  // duplicate warning
+  "This issue may already be reported": "यह समस्या शायद पहले ही दर्ज हो चुकी है",
+  "Existing complaint": "पहले से दर्ज शिकायत",
+  "about {n} m from your pin": "आपके निशान से लगभग {n} मीटर दूर",
+  "{n} person has upvoted this": "{n} व्यक्ति ने इसे अपवोट किया है",
+  "{n} people have upvoted this": "{n} लोगों ने इसे अपवोट किया है",
+  "Thanks! Your upvote was added.": "धन्यवाद! आपका अपवोट जुड़ गया।",
+  "Upvoting...": "अपवोट हो रहा है...",
+  "Upvote this complaint": "इस शिकायत को अपवोट करें",
+  "Back to the form": "फ़ॉर्म पर वापस जाएँ",
+  "Done": "हो गया",
+  // report extras
+  "Your complaint number is": "आपकी शिकायत संख्या है",
+  "It was sent to the {department} department. We will alert you when its status changes.": "यह {department} विभाग को भेज दी गई है। स्थिति बदलने पर हम आपको सूचित करेंगे।",
+  "responsible": "संबंधित",
+  "Selected photo preview": "चुनी गई फ़ोटो का पूर्वावलोकन",
+  "Please add a photo of the issue": "कृपया समस्या की फ़ोटो जोड़ें",
+  "Photo must be a JPEG taken with your camera's location turned on. PNG and WebP files have no location.": "फ़ोटो JPEG होनी चाहिए और कैमरे की लोकेशन चालू रखकर ली गई हो। PNG और WebP फ़ाइलों में लोकेशन नहीं होती।",
+  "The photo file is empty": "फ़ोटो की फ़ाइल खाली है",
+  "Choose a category": "श्रेणी चुनें",
+  "Title must be at least 5 characters": "शीर्षक कम से कम 5 अक्षर का हो",
+  "Title must be at most 150 characters": "शीर्षक अधिकतम 150 अक्षर का हो",
+  "Description must be at least 10 characters": "विवरण कम से कम 10 अक्षर का हो",
+  "Description must be at most 2000 characters": "विवरण अधिकतम 2000 अक्षर का हो",
+  "Pick the location on the map": "नक्शे पर स्थान चुनें",
+  "This photo has no GPS location. Turn on location for your camera and take the photo again (screenshots, downloaded pictures and PNG or WebP files have no location).":
+    "इस फ़ोटो में GPS लोकेशन नहीं है। कैमरे की लोकेशन चालू करके फ़ोटो दोबारा लें (स्क्रीनशॉट, डाउनलोड की गई तस्वीरों और PNG या WebP फ़ाइलों में लोकेशन नहीं होती)।",
+  // my complaints / detail
+  "My complaints": "मेरी शिकायतें",
+  "All": "सभी",
+  "Filter by progress": "प्रगति के अनुसार छाँटें",
+  'Nothing is "{status}" right now': 'अभी कुछ भी "{status}" नहीं है',
+  "Try another filter to see your other complaints.": "अपनी दूसरी शिकायतें देखने के लिए कोई और फ़िल्टर चुनें।",
+  "Report an issue and it will show up here with its progress.": "समस्या दर्ज करें, वह अपनी प्रगति के साथ यहाँ दिखेगी।",
+  "Showing {shown} of {total}": "{total} में से {shown} दिख रही हैं",
+  "Show more": "और दिखाएँ",
+  "Back to my complaints": "मेरी शिकायतों पर वापस",
+  "We could not find this complaint. It may belong to someone else.": "यह शिकायत नहीं मिली। हो सकता है यह किसी और की हो।",
+  "Progress": "प्रगति",
+  "Fixed on {date}.": "{date} को ठीक हुई।",
+  "This is taking longer than expected. The department has been alerted.": "इसमें उम्मीद से ज़्यादा समय लग रहा है। विभाग को सूचित कर दिया गया है।",
+  "Photo of: {title}": "फ़ोटो: {title}",
+  "Where the issue is": "समस्या कहाँ है",
+  "Photo of the finished work": "पूरे हुए काम की फ़ोटो",
+  "Photo of the finished work, taken at the spot": "मौके पर ली गई, पूरे हुए काम की फ़ोटो",
+  "What you reported": "आपने क्या दर्ज किया",
+  "Handled by": "ज़िम्मेदार विभाग",
+  "Reported on": "दर्ज करने की तिथि",
+  "Support from neighbours": "पड़ोसियों का समर्थन",
+  "Your name is hidden from other citizens on this complaint.": "इस शिकायत पर आपका नाम दूसरे नागरिकों से छुपा है।",
+  // nearby
+  "Issues near you": "आपके आस-पास की समस्याएँ",
+  "See what neighbours have already reported. If your problem is on the list, upvote it instead of reporting it again.": "देखें पड़ोसियों ने क्या दर्ज किया है। आपकी समस्या सूची में हो तो दोबारा दर्ज करने के बजाय उसे अपवोट करें।",
+  "Use my location": "मेरा स्थान इस्तेमाल करें",
+  "Distance": "दूरी",
+  "All categories": "सभी श्रेणियाँ",
+  "Map of nearby issues. Click to choose where to look.": "आस-पास की समस्याओं का नक्शा। देखने की जगह चुनने के लिए क्लिक करें।",
+  "Click the map to look somewhere else.": "कहीं और देखने के लिए नक्शे पर क्लिक करें।",
+  "Use your location, or click the map to choose where to look.": "अपना स्थान इस्तेमाल करें, या देखने की जगह चुनने के लिए नक्शे पर क्लिक करें।",
+  "Nothing reported here yet": "यहाँ अभी कुछ दर्ज नहीं है",
+  "No open complaints in this area. If you see a problem, you can be the first to report it.": "इस इलाके में कोई खुली शिकायत नहीं है। कोई समस्या दिखे तो आप सबसे पहले दर्ज कर सकते हैं।",
+  "Complaints near this spot": "इस जगह के पास की शिकायतें",
+  "{count} nearby": "{count} आस-पास",
+  "{n} m away": "{n} मीटर दूर",
+  "reported by {name}": "{name} ने दर्ज की",
+  "Your complaint": "आपकी शिकायत",
+  // alerts
+  "Mark all as read": "सभी पढ़ी हुई मानें",
+  "No alerts yet": "अभी कोई सूचना नहीं",
+  "You will see a message here when the status of your complaint changes or when you earn a badge.": "शिकायत की स्थिति बदलने या बैज मिलने पर यहाँ संदेश दिखेगा।",
+  "Unread": "अपठित",
+  // rewards
+  "Total points": "कुल अंक",
+  "{n} more point to earn the {badge} badge.": "{badge} बैज पाने के लिए {n} अंक और चाहिए।",
+  "{n} more points to earn the {badge} badge.": "{badge} बैज पाने के लिए {n} अंक और चाहिए।",
+  "You have earned every badge.": "आपने सभी बैज जीत लिए हैं।",
+  "Badges": "बैज",
+  "No badges have been set up yet.": "अभी कोई बैज नहीं बनाया गया।",
+  "Recent activity": "हाल की गतिविधि",
+  "Recent points": "हाल के अंक",
+  "You reported an issue": "आपने एक समस्या दर्ज की",
+  "Neighbours upvoted your complaint": "पड़ोसियों ने आपकी शिकायत को अपवोट किया",
+  "Your complaint was resolved": "आपकी शिकायत हल हो गई",
+  "Points earned": "अंक मिले",
+  "Report an issue to earn your first points.": "पहले अंक पाने के लिए कोई समस्या दर्ज करें।",
+  "Leaderboard": "लीडरबोर्ड",
+  "Top citizens": "शीर्ष नागरिक",
+  "Nobody has points yet. Be the first.": "अभी किसी के पास अंक नहीं हैं। सबसे पहले आप बनें।",
+  // overdue label & profile extras
+  "Nothing to save. You have not changed anything.": "सहेजने को कुछ नहीं। आपने कुछ बदला नहीं है।",
+  "Name must be at least 2 characters": "नाम कम से कम 2 अक्षर का हो",
+  "Name must be at most 100 characters": "नाम अधिकतम 100 अक्षर का हो",
+  "Enter a valid email address": "सही ईमेल पता लिखें",
+  "Enter your password": "अपना पासवर्ड लिखें",
+  "Enter your current password": "अपना मौजूदा पासवर्ड लिखें",
+  "Password must be at least 8 characters": "पासवर्ड कम से कम 8 अक्षर का हो",
+  "Password must be at most 72 characters": "पासवर्ड अधिकतम 72 अक्षर का हो",
+  "Password must contain at least one letter and one number": "पासवर्ड में कम से कम एक अक्षर और एक अंक हो",
+  "The new password must be different from the current one": "नया पासवर्ड मौजूदा पासवर्ड से अलग होना चाहिए",
+  "Passwords do not match": "पासवर्ड मेल नहीं खाते",
+  "Phone must be 10-15 digits, optionally starting with +": "फ़ोन 10-15 अंकों का हो, चाहें तो + से शुरू करें",
+  "e.g. Large pothole near the bus stop": "जैसे बस स्टॉप के पास बड़ा गड्ढा",
+};
+
+// The language the page is showing right now. The LanguageProvider keeps this up to date so plain
+// helper functions (dates, "3 days ago", "2 upvotes") can follow the same language.
+let currentLang = "en";
+export function setCurrentLang(code) {
+  currentLang = code === "hi" ? "hi" : "en";
+}
+export function getCurrentLang() {
+  return currentLang;
+}
+
+// Sentences that carry a number the dictionary cannot list one by one.
+const HI_PATTERNS = [
+  [
+    /^This photo was taken (.+) from the pinned location\. It must be within (\d+) m\. Take the photo at the spot\.$/,
+    "यह फ़ोटो चुनी गई जगह से {1} दूर ली गई है। यह {2} मीटर के भीतर होनी चाहिए। फ़ोटो मौके पर लें।",
+  ],
+];
+
+function translatePattern(text) {
+  for (const [re, template] of HI_PATTERNS) {
+    const m = re.exec(text);
+    if (m) return template.replace(/\{(\d)\}/g, (_, i) => m[Number(i)]);
+  }
+  return null;
+}
+
+export function translate(lang, text, vars) {
+  if (typeof text !== "string") return text;
+  let out = text;
+  if (lang === "hi" && typeof text === "string") out = HI[text] || translatePattern(text) || text;
+  if (vars) for (const [k, v] of Object.entries(vars)) out = out.split(`{${k}}`).join(String(v));
+  return out;
+}
