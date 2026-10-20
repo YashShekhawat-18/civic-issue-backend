@@ -15,6 +15,7 @@ import { formatDateTime, plural } from "@/lib/format";
 import { statusInfo } from "@/lib/status";
 import { btnGhost, btnPrimary, btnSecondary, plate } from "@/lib/ui";
 import { IconCheck, IconThumb } from "@/components/icons";
+import { useT } from "@/context/LanguageContext";
 
 const PRIORITIES = [
   { value: "LOW", label: "Low" },
@@ -24,12 +25,13 @@ const PRIORITIES = [
 
 // Admin override: moves the complaint to its next status. No photo is needed (workers need one to resolve).
 function StatusControl({ complaint, onChanged }) {
+  const t = useT();
   const next = complaint.allowedNextStatuses?.[0];
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  if (!next) return <Alert type="success">This complaint is resolved. Its status can no longer change.</Alert>;
+  if (!next) return <Alert type="success">{t("This complaint is resolved. Its status can no longer change.")}</Alert>;
 
   async function change() {
     setBusy(true);
@@ -46,8 +48,8 @@ function StatusControl({ complaint, onChanged }) {
   }
 
   return (
-    <section className={`${plate} space-y-3 p-5`} aria-label="Change status">
-      <h2 className="text-lg font-bold">Change status</h2>
+    <section className={`${plate} space-y-3 p-5`} aria-label={t("Change status")}>
+      <h2 className="text-lg font-bold">{t("Change status")}</h2>
       <p className="text-sm text-asphalt-soft">
         This tells the citizen by alert and email.{next === "RESOLVED" ? " As an admin you can resolve without an after-fix photo." : ""}
       </p>
@@ -70,6 +72,7 @@ function StatusControl({ complaint, onChanged }) {
 }
 
 function PriorityControl({ complaint, onChanged }) {
+  const t = useT();
   const [value, setValue] = useState(complaint.priority);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
@@ -91,7 +94,7 @@ function PriorityControl({ complaint, onChanged }) {
   return (
     <div className="flex flex-wrap items-end gap-2">
       <label className="text-sm font-semibold">
-        Priority
+        {t("Priority")}
         <select
           value={value}
           onChange={(e) => setValue(e.target.value)}
@@ -115,6 +118,7 @@ function PriorityControl({ complaint, onChanged }) {
 }
 
 export default function AdminComplaintDetail() {
+  const t = useT();
   const { id } = useParams();
   const { data, error, loading, reload } = useApi(`/admin/complaints/${id}`);
   const c = data;
@@ -125,7 +129,7 @@ export default function AdminComplaintDetail() {
       <div className="space-y-4">
         <Alert type="error">{error}</Alert>
         <Link href="/admin/complaints" className={btnGhost}>
-          Back to complaints
+          {t("Back to complaints")}
         </Link>
       </div>
     );
@@ -135,7 +139,7 @@ export default function AdminComplaintDetail() {
   return (
     <article className="space-y-5">
       <Link href="/admin/complaints" className={`${btnGhost} -ml-3`}>
-        Back to complaints
+        {t("Back to complaints")}
       </Link>
 
       <header>
@@ -146,7 +150,7 @@ export default function AdminComplaintDetail() {
         </div>
       </header>
 
-      <section className={`${plate} p-5 pt-6`} aria-label="Progress">
+      <section className={`${plate} p-5 pt-6`} aria-label={t("Progress")}>
         <RoadTracker status={c.status} />
         {c.status === "RESOLVED" && c.resolvedAt && (
           <p className="mt-4 text-center text-sm text-asphalt-soft">Fixed on {formatDateTime(c.resolvedAt)}.</p>
@@ -161,7 +165,7 @@ export default function AdminComplaintDetail() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={photoSrc(c.photoUrl)} alt={`Reported: ${c.title}`} className="h-72 w-full rounded-2xl border border-line object-cover" />
             <figcaption className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-asphalt-soft">
-              Reported photo
+              {t("Reported photo")}
               {c.photoGeotagged && (
                 <span className="inline-flex items-center gap-1 text-highway-deep" data-testid="geotag-badge">
                   <IconCheck size={13} /> Location verified from the photo
@@ -170,45 +174,45 @@ export default function AdminComplaintDetail() {
             </figcaption>
           </figure>
         )}
-        <MapView center={{ lat, lng }} zoom={16} markers={[{ id: c.id, lat, lng, status: c.status }]} label="Where the issue is" height={288} />
+        <MapView center={{ lat, lng }} zoom={16} markers={[{ id: c.id, lat, lng, status: c.status }]} label={t("Where the issue is")} height={288} />
       </div>
 
       {c.resolutionPhotoUrl && (
         <figure>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={photoSrc(c.resolutionPhotoUrl)} alt="After-fix photo" className="h-72 w-full rounded-2xl border border-line object-cover md:w-1/2" />
-          <figcaption className="mt-1.5 text-xs font-medium text-asphalt-soft">After-fix photo from the worker</figcaption>
+          <img src={photoSrc(c.resolutionPhotoUrl)} alt={t("After-fix photo")} className="h-72 w-full rounded-2xl border border-line object-cover md:w-1/2" />
+          <figcaption className="mt-1.5 text-xs font-medium text-asphalt-soft">{t("After-fix photo from the worker")}</figcaption>
         </figure>
       )}
 
       <section className={`${plate} space-y-5 p-5`}>
         <div>
-          <h2 className="text-lg font-bold">Details</h2>
+          <h2 className="text-lg font-bold">{t("Details")}</h2>
           <p className="mt-2 whitespace-pre-line text-asphalt/90">{c.description}</p>
         </div>
         <dl className="grid gap-4 text-sm sm:grid-cols-2">
           <div>
-            <dt className="font-semibold text-asphalt-soft">Category</dt>
-            <dd className="mt-0.5 font-medium">{c.category?.name}</dd>
+            <dt className="font-semibold text-asphalt-soft">{t("Category")}</dt>
+            <dd className="mt-0.5 font-medium">{t(c.category?.name)}</dd>
           </div>
           <div>
-            <dt className="font-semibold text-asphalt-soft">Department</dt>
-            <dd className="mt-0.5 font-medium">{c.department?.name}</dd>
+            <dt className="font-semibold text-asphalt-soft">{t("Department")}</dt>
+            <dd className="mt-0.5 font-medium">{t(c.department?.name)}</dd>
           </div>
           <div>
-            <dt className="font-semibold text-asphalt-soft">Reported by</dt>
+            <dt className="font-semibold text-asphalt-soft">{t("Reported by")}</dt>
             <dd className="mt-0.5 font-medium">{c.reporter ? c.reporter.name : "Anonymous"}</dd>
           </div>
           <div>
-            <dt className="font-semibold text-asphalt-soft">Worker</dt>
+            <dt className="font-semibold text-asphalt-soft">{t("Worker")}</dt>
             <dd className="mt-0.5 font-medium">{c.assignedWorker ? c.assignedWorker.name : "Nobody yet"}</dd>
           </div>
           <div>
-            <dt className="font-semibold text-asphalt-soft">Reported on</dt>
+            <dt className="font-semibold text-asphalt-soft">{t("Reported on")}</dt>
             <dd className="mt-0.5 font-medium">{formatDateTime(c.createdAt)}</dd>
           </div>
           <div>
-            <dt className="font-semibold text-asphalt-soft">Support from neighbours</dt>
+            <dt className="font-semibold text-asphalt-soft">{t("Support from neighbours")}</dt>
             <dd className="mt-0.5 flex items-center gap-1.5 font-medium">
               <IconThumb size={15} /> {plural(c.upvoteCount ?? 0, "upvote", "upvotes")}
             </dd>

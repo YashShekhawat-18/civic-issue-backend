@@ -8,6 +8,7 @@ import FormField from "./FormField";
 import SelectField from "./SelectField";
 import Alert from "./Alert";
 import { btnPrimary, btnSecondary, plate } from "@/lib/ui";
+import { useT } from "@/context/LanguageContext";
 
 /**
  * Add or edit a department or a category.
@@ -15,6 +16,7 @@ import { btnPrimary, btnSecondary, plate } from "@/lib/ui";
  * departments: the department list (categories only, for the "Department" choice).
  */
 export default function CatalogForm({ kind, item, departments = [], onSaved, onCancel }) {
+  const t = useT();
   const editing = Boolean(item);
   const isCategory = kind === "category";
   const base = isCategory ? "/categories" : "/departments";
@@ -80,21 +82,21 @@ export default function CatalogForm({ kind, item, departments = [], onSaved, onC
       <h2 className="text-lg font-bold">{editing ? `Edit ${item.name}` : `Add a ${noun}`}</h2>
       <Alert type="error">{serverError}</Alert>
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField id="name" label="Name" value={form.name} onChange={onChange} error={errors.name} />
-        <FormField id="code" label="Code" value={form.code} onChange={onChange} error={errors.code} hint="Capital letters, digits and underscores. Used internally." />
+        <FormField id="name" label={t("Name")} value={form.name} onChange={onChange} error={errors.name} />
+        <FormField id="code" label={t("Code")} value={form.code} onChange={onChange} error={errors.code} hint={t("Capital letters, digits and underscores. Used internally.")} />
       </div>
       {isCategory && (
-        <SelectField id="departmentId" label="Department" value={form.departmentId} onChange={onChange} error={errors.departmentId}>
-          <option value="">Select a department</option>
+        <SelectField id="departmentId" label={t("Department")} value={form.departmentId} onChange={onChange} error={errors.departmentId}>
+          <option value="">{t("Select a department")}</option>
           {departments.filter((d) => d.isActive || d.id === item?.department?.id).map((d) => (
             <option key={d.id} value={d.id}>{d.name}</option>
           ))}
         </SelectField>
       )}
-      <FormField id="description" label="Description (optional)" value={form.description} onChange={onChange} error={errors.description} />
+      <FormField id="description" label={t("Description (optional)")} value={form.description} onChange={onChange} error={errors.description} />
       <div className="flex flex-wrap gap-3">
         <button type="submit" disabled={busy} className={btnPrimary}>{busy ? "Saving..." : editing ? "Save changes" : `Add ${noun}`}</button>
-        <button type="button" onClick={onCancel} className={btnSecondary}>Cancel</button>
+        <button type="button" onClick={onCancel} className={btnSecondary}>{t("Cancel")}</button>
       </div>
     </form>
   );

@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Circle, MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import { useT } from "@/context/LanguageContext";
 
 const COLORS = { SUBMITTED: "#1d5fd1", IN_PROGRESS: "#f6b400", RESOLVED: "#0b6b4d", HERE: "#1b2430" };
 
@@ -42,6 +43,7 @@ function Recenter({ center, zoom }) {
  *  showCenter  draw a dark pin at the centre
  */
 export default function MapView({ center, zoom = 15, markers = [], radius, onPick, showCenter = false, height = 288, label = "Map" }) {
+  const t = useT();
   return (
     <div
       data-testid="map"
@@ -52,7 +54,7 @@ export default function MapView({ center, zoom = 15, markers = [], radius, onPic
     >
       <MapContainer center={[center.lat, center.lng]} zoom={zoom} scrollWheelZoom={!!onPick} style={{ height: "100%", width: "100%" }}>
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">{t("OpenStreetMap")}</a> contributors'
           url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         {onPick && <Picker onPick={onPick} />}
@@ -69,7 +71,7 @@ export default function MapView({ center, zoom = 15, markers = [], radius, onPic
                 {m.href && (
                   <>
                     <br />
-                    <a href={m.href}>Open</a>
+                    <a href={m.href}>{t("Open")}</a>
                   </>
                 )}
               </Popup>

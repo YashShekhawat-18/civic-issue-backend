@@ -8,12 +8,14 @@ import MapView from "@/components/MapViewLoader";
 import PageHeader from "@/components/PageHeader";
 import Alert from "@/components/Alert";
 import { plate } from "@/lib/ui";
+import { useT } from "@/context/LanguageContext";
 
 // Same colours as the pins on the map.
 const SWATCH = { SUBMITTED: "bg-sign", IN_PROGRESS: "bg-signal", RESOLVED: "bg-highway" };
 const field = "rounded-lg border border-line bg-white px-3 py-2 text-sm";
 
 export default function AdminMapPage() {
+  const t = useT();
   const [status, setStatus] = useState("");
   const [overdue, setOverdue] = useState(false);
   const { data, error, loading } = useApi("/admin/complaints/map", { status, overdue: overdue ? "true" : "", limit: 500 });
@@ -25,13 +27,13 @@ export default function AdminMapPage() {
 
   return (
     <div>
-      <PageHeader title="Complaint map" />
+      <PageHeader title={t("Complaint map")} />
 
       <div className="mb-4 flex flex-wrap items-end gap-4">
         <label className="text-sm font-semibold">
-          Progress
+          {t("Progress")}
           <select className={`${field} mt-1 block font-normal`} value={status} onChange={(e) => setStatus(e.target.value)}>
-            <option value="">All</option>
+            <option value="">{t("All")}</option>
             {STATUS_ORDER.map((s) => (
               <option key={s} value={s}>
                 {STATUS_INFO[s].label}
@@ -41,7 +43,7 @@ export default function AdminMapPage() {
         </label>
         <label className="flex items-center gap-2 pb-2 text-sm font-semibold">
           <input type="checkbox" checked={overdue} onChange={(e) => setOverdue(e.target.checked)} />
-          Only overdue
+          {t("Only overdue")}
         </label>
       </div>
 
@@ -53,7 +55,7 @@ export default function AdminMapPage() {
           center={view.center}
           zoom={view.zoom}
           height={460}
-          label="All complaints"
+          label={t("All complaints")}
           markers={items.map((i) => ({
             id: i.id,
             lat: i.latitude,
@@ -65,7 +67,7 @@ export default function AdminMapPage() {
         />
       </div>
 
-      <section className={`${plate} mt-4 p-4`} aria-label="Map key">
+      <section className={`${plate} mt-4 p-4`} aria-label={t("Map key")}>
         <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
           {counts.map(({ s, n }) => (
             <li key={s} className="flex items-center gap-2">
@@ -78,7 +80,7 @@ export default function AdminMapPage() {
         {data && data.count >= data.limit && (
           <p className="mt-2 text-xs text-asphalt-soft">Showing the newest {data.limit} complaints. Use a filter to narrow it down.</p>
         )}
-        {data && items.length === 0 && <p className="mt-2 text-sm text-asphalt-soft">No complaints match these filters.</p>}
+        {data && items.length === 0 && <p className="mt-2 text-sm text-asphalt-soft">{t("No complaints match these filters.")}</p>}
       </section>
     </div>
   );

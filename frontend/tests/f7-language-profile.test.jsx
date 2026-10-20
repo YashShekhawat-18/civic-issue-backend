@@ -89,3 +89,12 @@ describe("profile page", () => {
     await waitFor(() => expect(window.localStorage.getItem("civic_lang")).toBe("hi"));
   });
 });
+
+describe("catalogue names", () => {
+  it("translates category, department and badge names", () => {
+    expect(translate("hi", "Pothole")).toBe("गड्ढा");
+    expect(translate("hi", "Sanitation")).toBe("स्वच्छता");
+    expect(translate("hi", "City Champion")).toBe("शहर का चैंपियन");
+    expect(translate("hi", "My own new category")).toBe("My own new category");
+  });
+});

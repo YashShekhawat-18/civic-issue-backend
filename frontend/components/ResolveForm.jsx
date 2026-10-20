@@ -7,12 +7,14 @@ import { validatePhoto } from "@/lib/report";
 import { fieldErrorsFromApi } from "@/lib/validation";
 import Alert from "./Alert";
 import { btnPrimary, plate } from "@/lib/ui";
+import { useT } from "@/context/LanguageContext";
 
 /**
  * A worker finishes a job: an after-fix photo taken at the place, plus an optional note.
  * The photo must carry GPS and be within 300 m of the complaint. The backend checks it again.
  */
 export default function ResolveForm({ complaintId, spot, onResolved }) {
+  const t = useT();
   const [photo, setPhoto] = useState(null);
   const [gps, setGps] = useState(undefined); // {lat,lng} | null (none) | undefined (not read yet)
   const [preview, setPreview] = useState("");
@@ -60,11 +62,11 @@ export default function ResolveForm({ complaintId, spot, onResolved }) {
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className={`${plate} space-y-4 p-5`} aria-label="Mark as resolved">
+    <form onSubmit={onSubmit} noValidate className={`${plate} space-y-4 p-5`} aria-label={t("Mark as resolved")}>
       <div>
-        <h2 className="text-lg font-bold">Mark as resolved</h2>
+        <h2 className="text-lg font-bold">{t("Mark as resolved")}</h2>
         <p className="mt-1 text-sm text-asphalt-soft">
-          Take a photo of the finished work at the spot, with location turned on. The citizen will see it.
+          {t("Take a photo of the finished work at the spot, with location turned on. The citizen will see it.")}
         </p>
       </div>
 
@@ -84,7 +86,7 @@ export default function ResolveForm({ complaintId, spot, onResolved }) {
         />
         {preview && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={preview} alt="After-fix photo preview" className="mt-3 h-36 rounded-lg border border-line object-cover" />
+          <img src={preview} alt={t("After-fix photo preview")} className="mt-3 h-36 rounded-lg border border-line object-cover" />
         )}
         {photo && !problem && metres !== null && (
           <p className="mt-1.5 text-xs font-medium text-highway-deep" data-testid="resolve-gps-ok">

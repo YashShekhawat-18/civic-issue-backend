@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useT } from "@/context/LanguageContext";
 
 const TABS = [
   { href: "/admin/manage/workers", label: "Workers" },
@@ -11,9 +12,10 @@ const TABS = [
 ];
 
 export default function ManageNav() {
+  const t = useT();
   const pathname = usePathname();
   return (
-    <nav aria-label="Manage" className="mb-6 flex gap-1 overflow-x-auto rounded-xl bg-white p-1 ring-1 ring-line">
+    <nav aria-label={t("Manage")} className="mb-6 flex gap-1 overflow-x-auto rounded-xl bg-white p-1 ring-1 ring-line">
       {TABS.map((t) => {
         const active = pathname.startsWith(t.href);
         return (

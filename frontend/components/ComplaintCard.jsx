@@ -29,7 +29,7 @@ export default function ComplaintCard({ complaint: c }) {
             <StatusPill status={c.status} overdue={c.overdue} />
           </div>
           <p className="mt-0.5 truncate text-sm text-asphalt-soft">
-            {t("{category} on {date}", { category: c.category?.name, date: formatDate(c.createdAt) })}
+            {t("{category} on {date}", { category: t(c.category?.name), date: formatDate(c.createdAt) })}
           </p>
           <p className="mt-0.5 flex items-center gap-1.5 text-xs text-asphalt-soft">
             <span className="font-semibold text-asphalt">{c.complaintNumber}</span>

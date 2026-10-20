@@ -14,15 +14,17 @@ import Alert from "@/components/Alert";
 import EmptyState from "@/components/EmptyState";
 import Spinner from "@/components/Spinner";
 import { btnGhost, btnSecondary, plate } from "@/lib/ui";
+import { useT } from "@/context/LanguageContext";
 
 function CardList({ title, items, href, empty }) {
+  const t = useT();
   return (
     <section aria-label={title} className="min-w-0">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-lg font-bold">{title}</h2>
         {href && (
           <Link href={href} className={btnGhost}>
-            See all
+            {t("See all")}
           </Link>
         )}
       </div>
@@ -42,6 +44,7 @@ function CardList({ title, items, href, empty }) {
 }
 
 export default function AdminDashboard() {
+  const t = useT();
   const { user } = useAuth();
   const { data, error, loading, reload } = useApi("/admin/dashboard");
   const [check, setCheck] = useState({ busy: false, message: "", error: "" });
@@ -60,7 +63,7 @@ export default function AdminDashboard() {
   if (loading && !data) return <Spinner />;
   if (error && !data) return <Alert type="error">{error}</Alert>;
 
-  const t = data.totals;
+  const totals = data.totals;
   const rate = data.resolutionRatePercent;
 
   return (
@@ -74,39 +77,39 @@ export default function AdminDashboard() {
       <Alert type="success">{check.message}</Alert>
       <Alert type="error">{check.error}</Alert>
 
-      <section className={`${plate} grid gap-6 p-5 md:grid-cols-[auto_1fr] md:items-center md:gap-10 md:p-6`} aria-label="Resolution rate">
+      <section className={`${plate} grid gap-6 p-5 md:grid-cols-[auto_1fr] md:items-center md:gap-10 md:p-6`} aria-label={t("Resolution rate")}>
         <div>
-          <p className="text-sm font-semibold text-asphalt-soft">Resolution rate</p>
+          <p className="text-sm font-semibold text-asphalt-soft">{t("Resolution rate")}</p>
           <p className="text-6xl font-extrabold leading-none" data-testid="resolution-rate">
             {rate}%
           </p>
-          <p className="mt-1 text-sm text-asphalt-soft">of {t.total} complaints are resolved</p>
+          <p className="mt-1 text-sm text-asphalt-soft">of {totals.total} complaints are resolved</p>
         </div>
         <StatusBar rows={data.byStatus} />
       </section>
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-5 [&>*:last-child:nth-child(odd)]:col-span-2 md:[&>*:last-child:nth-child(odd)]:col-span-1">
-        <StatTile id="total" label="All complaints" value={t.total} href="/admin/complaints" />
-        <StatTile id="submitted" label="Reported" value={t.submitted} href="/admin/complaints?status=SUBMITTED" tone="text-sign" />
-        <StatTile id="inProgress" label="Being fixed" value={t.inProgress} href="/admin/complaints?status=IN_PROGRESS" />
-        <StatTile id="resolved" label="Resolved" value={t.resolved} href="/admin/complaints?status=RESOLVED" tone="text-highway" />
-        <StatTile id="overdue" label="Overdue" value={t.overdue} href="/admin/overdue" tone="text-flag" />
+        <StatTile id="total" label={t("All complaints")} value={totals.total} href="/admin/complaints" />
+        <StatTile id="submitted" label={t("Reported")} value={totals.submitted} href="/admin/complaints?status=SUBMITTED" tone="text-sign" />
+        <StatTile id="inProgress" label={t("Being fixed")} value={totals.inProgress} href="/admin/complaints?status=IN_PROGRESS" />
+        <StatTile id="resolved" label={t("Resolved")} value={totals.resolved} href="/admin/complaints?status=RESOLVED" tone="text-highway" />
+        <StatTile id="overdue" label={t("Overdue")} value={totals.overdue} href="/admin/overdue" tone="text-flag" />
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <BarList title="By department" subtitle="Where complaints go" rows={foldTail(data.byDepartment)} />
-        <BarList title="By category" subtitle="What people report" rows={foldTail(data.byCategory)} />
+        <BarList title={t("By department")} subtitle="Where complaints go" rows={foldTail(data.byDepartment)} />
+        <BarList title={t("By category")} subtitle="What people report" rows={foldTail(data.byCategory)} />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <CardList
-          title="Oldest overdue"
+          title={t("Oldest overdue")}
           items={data.oldestOverdue}
           href="/admin/overdue"
           empty={{ title: "Nothing is overdue", text: "Every open complaint is within the time limit." }}
         />
         <CardList
-          title="Newest complaints"
+          title={t("Newest complaints")}
           items={data.recentComplaints}
           href="/admin/complaints"
           empty={{ title: "No complaints yet", text: "They will appear here as citizens report issues." }}

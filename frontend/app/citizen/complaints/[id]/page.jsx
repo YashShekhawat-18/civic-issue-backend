@@ -83,11 +83,11 @@ export default function ComplaintDetailPage() {
         <dl className="mt-5 grid gap-4 text-sm sm:grid-cols-2">
           <div>
             <dt className="font-semibold text-asphalt-soft">{t("Category")}</dt>
-            <dd className="mt-0.5 font-medium">{c.category?.name}</dd>
+            <dd className="mt-0.5 font-medium">{t(c.category?.name)}</dd>
           </div>
           <div>
             <dt className="font-semibold text-asphalt-soft">{t("Handled by")}</dt>
-            <dd className="mt-0.5 font-medium">{c.department?.name}</dd>
+            <dd className="mt-0.5 font-medium">{t(c.department?.name)}</dd>
           </div>
           <div>
             <dt className="font-semibold text-asphalt-soft">{t("Reported on")}</dt>

@@ -96,7 +96,7 @@ export default function NearbyPage() {
             <option value="">{t("All categories")}</option>
             {(categories || []).map((c) => (
               <option key={c.id} value={c.id}>
-                {c.name}
+                {t(c.name)}
               </option>
             ))}
           </select>
@@ -139,7 +139,7 @@ export default function NearbyPage() {
                     <StatusPill status={c.status} overdue={c.overdue} />
                   </div>
                   <p className="mt-0.5 text-sm text-asphalt-soft">
-                    {c.category?.name}, {t("{n} m away", { n: c.distanceMeters })}
+                    {t(c.category?.name)}, {t("{n} m away", { n: c.distanceMeters })}
                     {c.reporter?.name ? `, ${t("reported by {name}", { name: c.reporter.name })}` : ""}
                   </p>
                   <div className="mt-3">

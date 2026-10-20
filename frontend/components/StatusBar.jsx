@@ -1,5 +1,8 @@
+"use client";
+
 import { share } from "@/lib/charts";
 import { STATUS_INFO } from "@/lib/status";
+import { useT } from "@/context/LanguageContext";
 
 // The status colours are the same ones used on the pills and the progress road everywhere in the app.
 const FILL = { SUBMITTED: "bg-sign", IN_PROGRESS: "bg-signal", RESOLVED: "bg-highway" };
@@ -9,8 +12,9 @@ const FILL = { SUBMITTED: "bg-sign", IN_PROGRESS: "bg-signal", RESOLVED: "bg-hig
  * segments. The legend below always shows the name and number, so colour is never the only clue.
  */
 export default function StatusBar({ rows }) {
+  const t = useT();
   const total = rows.reduce((sum, r) => sum + r.count, 0);
-  if (!total) return <p className="text-sm text-asphalt-soft">No complaints yet.</p>;
+  if (!total) return <p className="text-sm text-asphalt-soft">{t("No complaints yet.")}</p>;
 
   return (
     <div>

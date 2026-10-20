@@ -1,5 +1,8 @@
+"use client";
+
 import { share } from "@/lib/charts";
 import { plate } from "@/lib/ui";
+import { useT } from "@/context/LanguageContext";
 
 /**
  * A ranked horizontal bar chart in plain HTML. One series, so one colour and no legend box:
@@ -7,6 +10,7 @@ import { plate } from "@/lib/ui";
  * row shows the share of the total. "Show as table" gives the same numbers without hover.
  */
 export default function BarList({ title, subtitle, rows, unit = "complaints" }) {
+  const t = useT();
   const total = rows.reduce((sum, r) => sum + r.count, 0);
   const max = Math.max(1, ...rows.map((r) => r.count));
 
@@ -16,7 +20,7 @@ export default function BarList({ title, subtitle, rows, unit = "complaints" }) 
       {subtitle && <p className="text-sm text-asphalt-soft">{subtitle}</p>}
 
       {rows.length === 0 ? (
-        <p className="mt-4 text-sm text-asphalt-soft">Nothing to show yet.</p>
+        <p className="mt-4 text-sm text-asphalt-soft">{t("Nothing to show yet.")}</p>
       ) : (
         <ul className="mt-4 space-y-2.5">
           {rows.map((r) => (
@@ -50,13 +54,13 @@ export default function BarList({ title, subtitle, rows, unit = "complaints" }) 
 
       {rows.length > 0 && (
         <details className="mt-4 text-sm">
-          <summary className="cursor-pointer font-semibold text-sign">Show as table</summary>
+          <summary className="cursor-pointer font-semibold text-sign">{t("Show as table")}</summary>
           <table className="mt-2 w-full text-left">
             <thead>
               <tr className="text-asphalt-soft">
-                <th className="py-1 font-semibold">Name</th>
-                <th className="py-1 text-right font-semibold">Complaints</th>
-                <th className="py-1 text-right font-semibold">Share</th>
+                <th className="py-1 font-semibold">{t("Name")}</th>
+                <th className="py-1 text-right font-semibold">{t("Complaints")}</th>
+                <th className="py-1 text-right font-semibold">{t("Share")}</th>
               </tr>
             </thead>
             <tbody>

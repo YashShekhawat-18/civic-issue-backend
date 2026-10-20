@@ -10,10 +10,12 @@ import PageHeader from "@/components/PageHeader";
 import Alert from "@/components/Alert";
 import Spinner from "@/components/Spinner";
 import { btnSecondary } from "@/lib/ui";
+import { useT } from "@/context/LanguageContext";
 
 const LIMIT = 20;
 
 export default function OverduePage() {
+  const t = useT();
   const [page, setPage] = useState(1);
   const { data, error, loading, reload } = useApi("/admin/overdue", { page, limit: LIMIT });
   const [check, setCheck] = useState({ busy: false, message: "", error: "" });
@@ -31,12 +33,12 @@ export default function OverduePage() {
 
   return (
     <div>
-      <PageHeader title="Overdue complaints">
+      <PageHeader title={t("Overdue complaints")}>
         <button onClick={runCheck} disabled={check.busy} className={btnSecondary}>
           {check.busy ? "Checking..." : "Run overdue check now"}
         </button>
       </PageHeader>
-      <p className="-mt-3 mb-5 text-sm text-asphalt-soft">Open complaints that have waited too long, oldest first. The check also runs by itself every hour.</p>
+      <p className="-mt-3 mb-5 text-sm text-asphalt-soft">{t("Open complaints that have waited too long, oldest first. The check also runs by itself every hour.")}</p>
 
       <div className="mb-4 space-y-3">
         <Alert type="success">{check.message}</Alert>
@@ -48,7 +50,7 @@ export default function OverduePage() {
       ) : error && !data ? (
         <Alert type="error">{error}</Alert>
       ) : !data.items.length ? (
-        <EmptyState title="Nothing is overdue" text="Every open complaint is within the time limit." />
+        <EmptyState title={t("Nothing is overdue")} text={t("Every open complaint is within the time limit.")} />
       ) : (
         <div className={loading ? "opacity-60" : ""}>
           <p className="mb-3 text-sm text-asphalt-soft" data-testid="overdue-count">

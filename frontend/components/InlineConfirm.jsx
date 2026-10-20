@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { btnGhost, btnSecondary } from "@/lib/ui";
+import { useT } from "@/context/LanguageContext";
 
 // A risky button that asks "are you sure?" in place, instead of a pop-up.
 export default function InlineConfirm({ label, confirmLabel, onConfirm, disabled }) {
+  const t = useT();
   const [asking, setAsking] = useState(false);
   if (!asking)
     return (
@@ -21,7 +23,7 @@ export default function InlineConfirm({ label, confirmLabel, onConfirm, disabled
       >
         {confirmLabel}
       </button>
-      <button type="button" className={btnSecondary} onClick={() => setAsking(false)}>Cancel</button>
+      <button type="button" className={btnSecondary} onClick={() => setAsking(false)}>{t("Cancel")}</button>
     </span>
   );
 }

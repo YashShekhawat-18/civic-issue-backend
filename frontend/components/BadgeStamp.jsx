@@ -16,7 +16,7 @@ export default function BadgeStamp({ badge, earned = true }) {
       >
         {showIcon ? badge.icon : <IconAward size={26} />}
       </span>
-      <span className="mt-1.5 text-xs font-bold leading-tight">{badge.name}</span>
+      <span className="mt-1.5 text-xs font-bold leading-tight">{t(badge.name)}</span>
       <span className="text-[11px] text-asphalt-soft">{earned ? t("Earned") : t("{n} points", { n: badge.pointsRequired })}</span>
     </div>
   );

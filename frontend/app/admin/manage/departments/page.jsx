@@ -11,8 +11,10 @@ import PageHeader from "@/components/PageHeader";
 import Alert from "@/components/Alert";
 import Spinner from "@/components/Spinner";
 import { btnGhost, btnPrimary, plate } from "@/lib/ui";
+import { useT } from "@/context/LanguageContext";
 
 export default function DepartmentsPage() {
+  const t = useT();
   const { data, error, loading, reload } = useApi("/admin/departments");
   const [editing, setEditing] = useState(null); // null | "new" | a department
   const [notice, setNotice] = useState({ type: "success", text: "" });
@@ -31,15 +33,15 @@ export default function DepartmentsPage() {
 
   return (
     <div>
-      <PageHeader title="Departments">
-        {editing === null && <button onClick={() => setEditing("new")} className={btnPrimary}>Add department</button>}
+      <PageHeader title={t("Departments")}>
+        {editing === null && <button onClick={() => setEditing("new")} className={btnPrimary}>{t("Add department")}</button>}
       </PageHeader>
       <div className="mb-4"><Alert type={notice.type}>{notice.text}</Alert></div>
       {editing && (
         <CatalogForm kind="department" item={editing === "new" ? undefined : editing} onSaved={saved} onCancel={() => setEditing(null)} />
       )}
       {loading && !data ? <Spinner /> : error && !data ? <Alert type="error">{error}</Alert> : !data.length ? (
-        <EmptyState title="No departments yet" text="Add the first department. Categories and workers belong to one." />
+        <EmptyState title={t("No departments yet")} text={t("Add the first department. Categories and workers belong to one.")} />
       ) : (
         <ul className="space-y-3">
           {data.map((d) => (
@@ -49,11 +51,11 @@ export default function DepartmentsPage() {
                 <p className="text-sm text-asphalt-soft">{d.code}{d.description ? ` - ${d.description}` : ""}</p>
               </div>
               <div className="flex flex-wrap items-center gap-1">
-                <button className={btnGhost} onClick={() => setEditing(d)} aria-label={`Edit ${d.name}`}>Edit</button>
+                <button className={btnGhost} onClick={() => setEditing(d)} aria-label={`Edit ${d.name}`}>{t("Edit")}</button>
                 {d.isActive ? (
-                  <InlineConfirm label="Deactivate" confirmLabel={`Yes, deactivate ${d.name}`} onConfirm={() => setActive(d, false)} />
+                  <InlineConfirm label={t("Deactivate")} confirmLabel={`Yes, deactivate ${d.name}`} onConfirm={() => setActive(d, false)} />
                 ) : (
-                  <button className={btnGhost} onClick={() => setActive(d, true)}>Reactivate</button>
+                  <button className={btnGhost} onClick={() => setActive(d, true)}>{t("Reactivate")}</button>
                 )}
               </div>
             </li>

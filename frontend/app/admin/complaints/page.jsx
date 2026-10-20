@@ -11,6 +11,7 @@ import PageHeader from "@/components/PageHeader";
 import Alert from "@/components/Alert";
 import Spinner from "@/components/Spinner";
 import { btnGhost } from "@/lib/ui";
+import { useT } from "@/context/LanguageContext";
 
 const LIMIT = 20;
 const EMPTY = { status: "", departmentId: "", categoryId: "", overdue: false, number: "" };
@@ -18,6 +19,7 @@ const field = "w-full rounded-lg border border-line bg-white px-3 py-2 text-sm";
 
 // Remounted (key = the filters) whenever a filter changes, so it always starts on page 1.
 function Results({ filters }) {
+  const t = useT();
   const [page, setPage] = useState(1);
   const { data, error, loading } = useApi("/admin/complaints", {
     status: filters.status,
@@ -32,7 +34,7 @@ function Results({ filters }) {
   if (loading && !data) return <Spinner />;
   if (error && !data) return <Alert type="error">{error}</Alert>;
   if (!data.items.length)
-    return <EmptyState title="No complaints match these filters" text="Clear a filter or search for another number." />;
+    return <EmptyState title={t("No complaints match these filters")} text={t("Clear a filter or search for another number.")} />;
 
   return (
     <div className={loading ? "opacity-60" : ""}>
@@ -52,6 +54,7 @@ function Results({ filters }) {
 }
 
 function Complaints() {
+  const t = useT();
   const params = useSearchParams();
   const initial = { ...EMPTY, status: STATUS_ORDER.includes(params.get("status")) ? params.get("status") : "", overdue: params.get("overdue") === "true" };
   const [filters, setFilters] = useState(initial);
@@ -63,10 +66,10 @@ function Complaints() {
 
   return (
     <div>
-      <PageHeader title="Complaints" />
+      <PageHeader title={t("Complaints")} />
 
       <form
-        aria-label="Filters"
+        aria-label={t("Filters")}
         onSubmit={(e) => {
           e.preventDefault();
           setFilters({ ...filters, number: numberInput.trim() });
@@ -74,9 +77,9 @@ function Complaints() {
         className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
       >
         <label className="text-sm font-semibold">
-          Progress
+          {t("Progress")}
           <select className={`${field} mt-1 font-normal`} value={filters.status} onChange={set("status")}>
-            <option value="">All</option>
+            <option value="">{t("All")}</option>
             {STATUS_ORDER.map((s) => (
               <option key={s} value={s}>
                 {STATUS_INFO[s].label}
@@ -85,9 +88,9 @@ function Complaints() {
           </select>
         </label>
         <label className="text-sm font-semibold">
-          Department
+          {t("Department")}
           <select className={`${field} mt-1 font-normal`} value={filters.departmentId} onChange={set("departmentId")}>
-            <option value="">All</option>
+            <option value="">{t("All")}</option>
             {(departments.data || []).map((d) => (
               <option key={d.id} value={d.id}>
                 {d.name}
@@ -96,33 +99,33 @@ function Complaints() {
           </select>
         </label>
         <label className="text-sm font-semibold">
-          Category
+          {t("Category")}
           <select className={`${field} mt-1 font-normal`} value={filters.categoryId} onChange={set("categoryId")}>
-            <option value="">All</option>
+            <option value="">{t("All")}</option>
             {(categories.data || []).map((c) => (
               <option key={c.id} value={c.id}>
-                {c.name}
+                {t(c.name)}
               </option>
             ))}
           </select>
         </label>
         <label className="text-sm font-semibold">
-          Complaint number
+          {t("Complaint number")}
           <span className="mt-1 flex gap-2">
             <input
               className={`${field} font-normal`}
-              placeholder="CIV-2026-000001"
+              placeholder={t("CIV-2026-000001")}
               value={numberInput}
               onChange={(e) => setNumberInput(e.target.value)}
             />
             <button type="submit" className="rounded-lg bg-asphalt px-3 text-sm font-semibold text-white">
-              Find
+              {t("Find")}
             </button>
           </span>
         </label>
         <label className="flex items-center gap-2 text-sm font-semibold">
           <input type="checkbox" checked={filters.overdue} onChange={set("overdue")} />
-          Only overdue
+          {t("Only overdue")}
         </label>
         {active && (
           <button
@@ -133,7 +136,7 @@ function Complaints() {
               setNumberInput("");
             }}
           >
-            Clear filters
+            {t("Clear filters")}
           </button>
         )}
       </form>

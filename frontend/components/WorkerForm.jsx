@@ -8,9 +8,11 @@ import FormField from "./FormField";
 import SelectField from "./SelectField";
 import Alert from "./Alert";
 import { btnPrimary, btnSecondary, plate } from "@/lib/ui";
+import { useT } from "@/context/LanguageContext";
 
 // Add a worker (email + password), or edit one (move department, reset password).
 export default function WorkerForm({ worker, departments, onSaved, onCancel }) {
+  const t = useT();
   const editing = Boolean(worker);
   const [form, setForm] = useState({
     name: worker?.name ?? "",
@@ -63,18 +65,18 @@ export default function WorkerForm({ worker, departments, onSaved, onCancel }) {
       <h2 className="text-lg font-bold">{editing ? `Edit ${worker.name}` : "Add a worker"}</h2>
       <Alert type="error">{serverError}</Alert>
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField id="name" label="Name" value={form.name} onChange={onChange} error={errors.name} autoComplete="off" />
+        <FormField id="name" label={t("Name")} value={form.name} onChange={onChange} error={errors.name} autoComplete="off" />
         {editing ? (
           <div>
-            <p className="mb-1.5 text-sm font-semibold">Email</p>
+            <p className="mb-1.5 text-sm font-semibold">{t("Email")}</p>
             <p className="rounded-lg bg-concrete px-3.5 py-2.5 text-asphalt-soft">{worker.email}</p>
           </div>
         ) : (
-          <FormField id="email" label="Email" type="email" value={form.email} onChange={onChange} error={errors.email} autoComplete="off" />
+          <FormField id="email" label={t("Email")} type="email" value={form.email} onChange={onChange} error={errors.email} autoComplete="off" />
         )}
-        <FormField id="phone" label="Phone (optional)" value={form.phone} onChange={onChange} error={errors.phone} inputMode="tel" />
-        <SelectField id="departmentId" label="Department" value={form.departmentId} onChange={onChange} error={errors.departmentId}>
-          <option value="">Select a department</option>
+        <FormField id="phone" label={t("Phone (optional)")} value={form.phone} onChange={onChange} error={errors.phone} inputMode="tel" />
+        <SelectField id="departmentId" label={t("Department")} value={form.departmentId} onChange={onChange} error={errors.departmentId}>
+          <option value="">{t("Select a department")}</option>
           {departments.filter((d) => d.isActive || d.id === worker?.departmentId).map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
         </SelectField>
       </div>
@@ -86,11 +88,11 @@ export default function WorkerForm({ worker, departments, onSaved, onCancel }) {
         onChange={onChange}
         error={errors.password}
         autoComplete="new-password"
-        hint="At least 8 characters with a letter and a number. Tell the worker, they can use it to log in."
+        hint={t("At least 8 characters with a letter and a number. Tell the worker, they can use it to log in.")}
       />
       <div className="flex flex-wrap gap-3">
         <button type="submit" disabled={busy} className={btnPrimary}>{busy ? "Saving..." : editing ? "Save changes" : "Add worker"}</button>
-        <button type="button" onClick={onCancel} className={btnSecondary}>Cancel</button>
+        <button type="button" onClick={onCancel} className={btnSecondary}>{t("Cancel")}</button>
       </div>
     </form>
   );

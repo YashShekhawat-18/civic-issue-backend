@@ -11,8 +11,10 @@ import PageHeader from "@/components/PageHeader";
 import Alert from "@/components/Alert";
 import Spinner from "@/components/Spinner";
 import { btnGhost, btnPrimary, plate } from "@/lib/ui";
+import { useT } from "@/context/LanguageContext";
 
 export default function CategoriesPage() {
+  const t = useT();
   const cats = useApi("/admin/categories");
   const depts = useApi("/admin/departments");
   const [editing, setEditing] = useState(null);
@@ -33,16 +35,16 @@ export default function CategoriesPage() {
 
   return (
     <div>
-      <PageHeader title="Categories">
-        {editing === null && depts.data && <button onClick={() => setEditing("new")} className={btnPrimary}>Add category</button>}
+      <PageHeader title={t("Categories")}>
+        {editing === null && depts.data && <button onClick={() => setEditing("new")} className={btnPrimary}>{t("Add category")}</button>}
       </PageHeader>
-      <p className="-mt-3 mb-5 text-sm text-asphalt-soft">A category decides which department receives a complaint.</p>
+      <p className="-mt-3 mb-5 text-sm text-asphalt-soft">{t("A category decides which department receives a complaint.")}</p>
       <div className="mb-4"><Alert type={notice.type}>{notice.text}</Alert></div>
       {editing && depts.data && (
         <CatalogForm kind="category" item={editing === "new" ? undefined : editing} departments={depts.data} onSaved={saved} onCancel={() => setEditing(null)} />
       )}
       {cats.loading && !data ? <Spinner /> : cats.error && !data ? <Alert type="error">{cats.error}</Alert> : !data.length ? (
-        <EmptyState title="No categories yet" text="Add a category and choose the department that handles it." />
+        <EmptyState title={t("No categories yet")} text={t("Add a category and choose the department that handles it.")} />
       ) : (
         <ul className="space-y-3">
           {data.map((c) => (
@@ -52,11 +54,11 @@ export default function CategoriesPage() {
                 <p className="text-sm text-asphalt-soft">Goes to {c.department?.name ?? "no department"} - {c.code}</p>
               </div>
               <div className="flex flex-wrap items-center gap-1">
-                <button className={btnGhost} onClick={() => setEditing(c)} aria-label={`Edit ${c.name}`}>Edit</button>
+                <button className={btnGhost} onClick={() => setEditing(c)} aria-label={`Edit ${c.name}`}>{t("Edit")}</button>
                 {c.isActive ? (
-                  <InlineConfirm label="Deactivate" confirmLabel={`Yes, deactivate ${c.name}`} onConfirm={() => setActive(c, false)} />
+                  <InlineConfirm label={t("Deactivate")} confirmLabel={`Yes, deactivate ${c.name}`} onConfirm={() => setActive(c, false)} />
                 ) : (
-                  <button className={btnGhost} onClick={() => setActive(c, true)}>Reactivate</button>
+                  <button className={btnGhost} onClick={() => setActive(c, true)}>{t("Reactivate")}</button>
                 )}
               </div>
             </li>
